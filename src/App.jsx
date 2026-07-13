@@ -1,9 +1,11 @@
+import axiosInstance from "./api/axios";
+
 function App() {
+  console.log(axiosInstance.defaults.baseURL);
+
   return (
-    <div className="flex min-h-screen items-center justify-center bg-[#0f0f0f]">
-      <h1 className="text-4xl font-bold text-white">
-        Streamix Frontend 🚀
-      </h1>
+    <div className="flex min-h-screen items-center justify-center">
+      <h1 className="text-3xl font-bold">Streamix 🚀</h1>
     </div>
   );
 }
