@@ -9,20 +9,16 @@ const initialState = {
   error: null,
 
   page: 1,
-  totalPages: 1,
-  totalVideos: 0,
-  hasMore: true,
+  limit: 12,
 
-  query: "",
-  sortBy: "createdAt",
-  sortType: "desc",
+  hasMore: true,
 };
 
 export const getVideos = createAsyncThunk(
   "video/getVideos",
   async (params, thunkAPI) => {
     try {
-      return await videoService.getAllVideos(params);
+      return await videoService.getVideos(params);
     } catch (error) {
       return thunkAPI.rejectWithValue(
         error.response?.data?.message || error.message
@@ -31,11 +27,24 @@ export const getVideos = createAsyncThunk(
   }
 );
 
-export const getVideo = createAsyncThunk(
-  "video/getVideo",
+export const getVideoById = createAsyncThunk(
+  "video/getVideoById",
   async (videoId, thunkAPI) => {
     try {
       return await videoService.getVideoById(videoId);
+    } catch (error) {
+      return thunkAPI.rejectWithValue(
+        error.response?.data?.message || error.message
+      );
+    }
+  }
+);
+
+export const publishVideo = createAsyncThunk(
+  "video/publishVideo",
+  async (formData, thunkAPI) => {
+    try {
+      return await videoService.publishVideo(formData);
     } catch (error) {
       return thunkAPI.rejectWithValue(
         error.response?.data?.message || error.message
@@ -50,43 +59,34 @@ const videoSlice = createSlice({
   initialState,
 
   reducers: {
-    clearVideos: (state) => {
+    clearVideoError: (state) => {
+      state.error = null;
+    },
+
+    resetCurrentVideo: (state) => {
+      state.currentVideo = null;
+    },
+
+    resetVideos: (state) => {
       state.videos = [];
       state.page = 1;
       state.hasMore = true;
-    },
-
-    setQuery: (state, action) => {
-      state.query = action.payload;
-    },
-
-    setSortBy: (state, action) => {
-      state.sortBy = action.payload;
-    },
-
-    setSortType: (state, action) => {
-      state.sortType = action.payload;
-    },
-
-    clearCurrentVideo: (state) => {
-      state.currentVideo = null;
     },
   },
 
   extraReducers: (builder) => {
     builder
 
+      // Get Videos
+
       .addCase(getVideos.pending, (state) => {
         state.loading = true;
-        state.error = null;
       })
 
       .addCase(getVideos.fulfilled, (state, action) => {
         state.loading = false;
 
-        const payload = action.payload?.data || {};
-
-        const docs = payload.docs || [];
+        const docs = action.payload?.data?.docs || [];
 
         if (state.page === 1) {
           state.videos = docs;
@@ -94,40 +94,59 @@ const videoSlice = createSlice({
           state.videos.push(...docs);
         }
 
-        state.page = payload.page || 1;
-        state.totalPages = payload.totalPages || 1;
-        state.totalVideos = payload.totalDocs || docs.length;
-        state.hasMore = payload.hasNextPage || false;
+        state.hasMore =
+          docs.length >= state.limit;
+
+        state.page += 1;
       })
 
       .addCase(getVideos.rejected, (state, action) => {
         state.loading = false;
+
         state.error = action.payload;
       })
 
-      .addCase(getVideo.pending, (state) => {
+      // Get Single Video
+
+      .addCase(getVideoById.pending, (state) => {
         state.loading = true;
-        state.error = null;
       })
 
-      .addCase(getVideo.fulfilled, (state, action) => {
+      .addCase(getVideoById.fulfilled, (state, action) => {
         state.loading = false;
-        state.currentVideo = action.payload?.data;
+
+        state.currentVideo =
+          action.payload?.data;
       })
 
-      .addCase(getVideo.rejected, (state, action) => {
+      .addCase(getVideoById.rejected, (state, action) => {
         state.loading = false;
+
+        state.error = action.payload;
+      })
+
+      // Publish
+
+      .addCase(publishVideo.pending, (state) => {
+        state.loading = true;
+      })
+
+      .addCase(publishVideo.fulfilled, (state) => {
+        state.loading = false;
+      })
+
+      .addCase(publishVideo.rejected, (state, action) => {
+        state.loading = false;
+
         state.error = action.payload;
       });
   },
 });
 
 export const {
-  clearVideos,
-  setQuery,
-  setSortBy,
-  setSortType,
-  clearCurrentVideo,
+  clearVideoError,
+  resetCurrentVideo,
+  resetVideos,
 } = videoSlice.actions;
 
 export default videoSlice.reducer;

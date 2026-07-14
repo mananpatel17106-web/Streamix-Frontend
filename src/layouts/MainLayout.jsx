@@ -1,33 +1,21 @@
 import { useState } from "react";
-import { Outlet } from "react-router-dom";
+import { Outlet, useNavigate } from "react-router-dom";
 
 import Navbar from "../components/layout/Navbar";
 import Sidebar from "../components/layout/Sidebar";
 
 const MainLayout = () => {
+  const navigate = useNavigate();
+
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
-  // TODO: Redux auth state sathe replace karvanu
-  const user = {
-    username: "manan",
-    fullName: "Manan Patel",
-    email: "manan@example.com",
-    avatar: "",
-  };
-
   const handleSearch = (query) => {
-    console.log("Search:", query);
+    if (!query.trim()) {
+      navigate("/");
+      return;
+    }
 
-    // TODO:
-    // navigate(`/search?q=${encodeURIComponent(query)}`)
-  };
-
-  const handleLogout = () => {
-    console.log("Logout");
-
-    // TODO:
-    // dispatch(logout())
-    // navigate("/login")
+    navigate(`/search?q=${encodeURIComponent(query)}`);
   };
 
   return (
@@ -49,12 +37,10 @@ const MainLayout = () => {
           setSidebarOpen={setSidebarOpen}
         />
 
-        {/* Main */}
+        {/* Content */}
 
-        <div className="flex min-h-screen flex-1 flex-col lg:ml-0">
+        <div className="flex min-h-screen flex-1 flex-col">
           <Navbar
-            user={user}
-            onLogout={handleLogout}
             onSearch={handleSearch}
             sidebarOpen={sidebarOpen}
             setSidebarOpen={setSidebarOpen}

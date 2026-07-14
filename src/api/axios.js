@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const axiosInstance = axios.create({
+const api = axios.create({
   baseURL: import.meta.env.VITE_API_BASE_URL,
   withCredentials: true,
   headers: {
@@ -8,22 +8,69 @@ const axiosInstance = axios.create({
   },
 });
 
-axiosInstance.interceptors.request.use(
-  (config) => {
-    return config;
-  },
-  (error) => Promise.reject(error)
-);
+let isRefreshing = false;
+let failedQueue = [];
 
-axiosInstance.interceptors.response.use(
+const processQueue = (error = null) => {
+  failedQueue.forEach((promise) => {
+    if (error) {
+      promise.reject(error);
+    } else {
+      promise.resolve();
+    }
+  });
+
+  failedQueue = [];
+};
+
+api.interceptors.response.use(
   (response) => response,
+
   async (error) => {
-    if (error.response?.status === 401) {
-      console.warn("Unauthorized request");
+    const originalRequest = error.config;
+
+    if (
+      error.response?.status === 401 &&
+      !originalRequest._retry
+    ) {
+      if (isRefreshing) {
+        return new Promise((resolve, reject) => {
+          failedQueue.push({
+            resolve,
+            reject,
+          });
+        }).then(() => api(originalRequest));
+      }
+
+      originalRequest._retry = true;
+
+      isRefreshing = true;
+
+      try {
+        await axios.post(
+          `${import.meta.env.VITE_API_BASE_URL}/users/refresh-token`,
+          {},
+          {
+            withCredentials: true,
+          }
+        );
+
+        processQueue();
+
+        return api(originalRequest);
+      } catch (err) {
+        processQueue(err);
+
+        window.location.href = "/login";
+
+        return Promise.reject(err);
+      } finally {
+        isRefreshing = false;
+      }
     }
 
     return Promise.reject(error);
   }
 );
 
-export default axiosInstance;
+export default api;

@@ -1,51 +1,54 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { Routes, Route } from "react-router-dom";
 
-import AuthLayout from "../layouts/AuthLayout";
 import MainLayout from "../layouts/MainLayout";
 
 import Home from "../pages/Home";
 import Login from "../pages/Login";
 import Signup from "../pages/Signup";
+import Profile from "../pages/Profile";
 import Dashboard from "../pages/Dashboard";
-import UploadVideo from "../pages/UploadVideo";
-import WatchVideo from "../pages/WatchVideo";
 import Playlist from "../pages/Playlist";
 import History from "../pages/History";
-import Subscription from "../pages/Subscription";
-import Search from "../pages/Search";
-import Profile from "../pages/Profile";
-import Settings from "../pages/Settings";
-import NotFound from "../pages/NotFound";
+import UploadVideo from "../pages/UploadVideo";
 import WatchVideo from "../pages/WatchVideo";
+import NotFound from "../pages/NotFound";
+
+import GuestRoute from "./GuestRoute";
+import ProtectedRoute from "./ProtectedRoute";
 
 const AppRoutes = () => {
   return (
-    <BrowserRouter>
-      <Routes>
-        {/* Auth Routes */}
-        <Route element={<AuthLayout />}>
-          <Route path="/login" element={<Login />} />
-          <Route path="/signup" element={<Signup />} />
-        </Route>
+    <Routes>
+      {/* Guest */}
 
-        {/* Main Application */}
+      <Route element={<GuestRoute />}>
+        <Route path="/login" element={<Login />} />
+
+        <Route path="/signup" element={<Signup />} />
+      </Route>
+
+      {/* Protected */}
+
+      <Route element={<ProtectedRoute />}>
         <Route element={<MainLayout />}>
-          <Route path="/" element={<Home />} />
-          <Route path="/dashboard" element={<Dashboard />} />
-          <Route path="/upload" element={<UploadVideo />} />
-          <Route path="/watch/:videoId" element={<WatchVideo />} />
-          <Route path="/playlist" element={<Playlist />} />
-          <Route path="/history" element={<History />} />
-          <Route path="/subscriptions" element={<Subscription />} />
-          <Route path="/search" element={<Search />} />
-          <Route path="/profile/:username" element={<Profile />} />
-          <Route path="/settings" element={<Settings />} />
-          <Route path="/watch/:videoId" element={<WatchVideo />} />
-        </Route>
+          <Route index element={<Home />} />
 
-        <Route path="*" element={<NotFound />} />
-      </Routes>
-    </BrowserRouter>
+          <Route path="/watch/:videoId" element={<WatchVideo />} />
+
+          <Route path="/upload" element={<UploadVideo />} />
+
+          <Route path="/history" element={<History />} />
+
+          <Route path="/playlists" element={<Playlist />} />
+
+          <Route path="/dashboard" element={<Dashboard />} />
+
+          <Route path="/profile/:username" element={<Profile />} />
+        </Route>
+      </Route>
+
+      <Route path="*" element={<NotFound />} />
+    </Routes>
   );
 };
 

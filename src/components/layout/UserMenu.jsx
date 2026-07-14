@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { AnimatePresence, motion } from "framer-motion";
 import {
   ChevronDown,
@@ -8,14 +8,18 @@ import {
   Settings,
   LogOut,
 } from "lucide-react";
+import { useDispatch } from "react-redux";
+import toast from "react-hot-toast";
 
-const UserMenu = ({
-  user = {},
-  onLogout,
-}) => {
+import { logoutUser } from "../../store/slices/authSlice";
+
+const UserMenu = ({ user }) => {
   const [open, setOpen] = useState(false);
 
   const menuRef = useRef(null);
+
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   useEffect(() => {
     const handleOutsideClick = (e) => {
@@ -27,23 +31,41 @@ const UserMenu = ({
     document.addEventListener("mousedown", handleOutsideClick);
 
     return () => {
-      document.removeEventListener("mousedown", handleOutsideClick);
+      document.removeEventListener(
+        "mousedown",
+        handleOutsideClick
+      );
     };
   }, []);
 
+  const handleLogout = async () => {
+    const result = await dispatch(logoutUser());
+
+    if (logoutUser.fulfilled.match(result)) {
+      toast.success("Logged Out Successfully");
+
+      navigate("/login", {
+        replace: true,
+      });
+    }
+  };
+
   const avatar =
     user?.avatar ||
-    "https://ui-avatars.com/api/?background=18181b&color=fff&name=U";
+    "https://ui-avatars.com/api/?background=18181b&color=fff&name=User";
 
   return (
-    <div className="relative" ref={menuRef}>
+    <div
+      className="relative"
+      ref={menuRef}
+    >
       <button
         onClick={() => setOpen((prev) => !prev)}
         className="flex items-center gap-3 rounded-xl border border-zinc-800 bg-zinc-900 px-2 py-2 transition hover:border-zinc-700"
       >
         <img
           src={avatar}
-          alt="avatar"
+          alt={user?.username || "User"}
           className="h-9 w-9 rounded-full object-cover"
         />
 
@@ -59,7 +81,7 @@ const UserMenu = ({
 
         <ChevronDown
           size={18}
-          className={`hidden text-zinc-400 transition lg:block ${
+          className={`hidden text-zinc-400 transition-transform lg:block ${
             open ? "rotate-180" : ""
           }`}
         />
@@ -86,8 +108,10 @@ const UserMenu = ({
             transition={{
               duration: 0.18,
             }}
-            className="absolute right-0 mt-3 w-64 overflow-hidden rounded-2xl border border-zinc-800 bg-[#111111] shadow-2xl"
+            className="absolute right-0 z-50 mt-3 w-64 overflow-hidden rounded-2xl border border-zinc-800 bg-[#111111] shadow-2xl"
           >
+            {/* User Info */}
+
             <div className="border-b border-zinc-800 p-4">
               <p className="truncate font-semibold text-white">
                 {user?.fullName || "Guest User"}
@@ -98,10 +122,12 @@ const UserMenu = ({
               </p>
             </div>
 
-            <div className="py-2">
+            {/* Menu */}
 
+            <div className="py-2">
               <Link
-                to="/profile"
+                to={`/profile/${user?.username}`}
+                onClick={() => setOpen(false)}
                 className="flex items-center gap-3 px-4 py-3 text-sm text-zinc-300 transition hover:bg-zinc-900 hover:text-white"
               >
                 <CircleUserRound size={18} />
@@ -110,6 +136,7 @@ const UserMenu = ({
 
               <Link
                 to="/dashboard"
+                onClick={() => setOpen(false)}
                 className="flex items-center gap-3 px-4 py-3 text-sm text-zinc-300 transition hover:bg-zinc-900 hover:text-white"
               >
                 <LayoutDashboard size={18} />
@@ -118,17 +145,19 @@ const UserMenu = ({
 
               <Link
                 to="/settings"
+                onClick={() => setOpen(false)}
                 className="flex items-center gap-3 px-4 py-3 text-sm text-zinc-300 transition hover:bg-zinc-900 hover:text-white"
               >
                 <Settings size={18} />
                 Settings
               </Link>
-
             </div>
+
+            {/* Logout */}
 
             <div className="border-t border-zinc-800 p-2">
               <button
-                onClick={onLogout}
+                onClick={handleLogout}
                 className="flex w-full items-center gap-3 rounded-xl px-3 py-3 text-sm text-red-400 transition hover:bg-red-500/10"
               >
                 <LogOut size={18} />
