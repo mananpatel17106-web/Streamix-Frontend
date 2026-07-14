@@ -1,5 +1,8 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 
+import AuthLayout from "../layouts/AuthLayout";
+import MainLayout from "../layouts/MainLayout";
+
 import Home from "../pages/Home";
 import Login from "../pages/Login";
 import Signup from "../pages/Signup";
@@ -18,37 +21,29 @@ const AppRoutes = () => {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/" element={<Home />} />
 
-        <Route path="/login" element={<Login />} />
+        {/* Auth Routes */}
+        <Route element={<AuthLayout />}>
+          <Route path="/login" element={<Login />} />
+          <Route path="/signup" element={<Signup />} />
+        </Route>
 
-        <Route path="/signup" element={<Signup />} />
-
-        <Route path="/dashboard" element={<Dashboard />} />
-
-        <Route path="/upload" element={<UploadVideo />} />
-
-        <Route path="/watch/:videoId" element={<WatchVideo />} />
-
-        <Route path="/playlist" element={<Playlist />} />
-
-        <Route path="/history" element={<History />} />
-
-        <Route
-          path="/subscriptions"
-          element={<Subscription />}
-        />
-
-        <Route path="/search" element={<Search />} />
-
-        <Route
-          path="/profile/:username"
-          element={<Profile />}
-        />
-
-        <Route path="/settings" element={<Settings />} />
+        {/* Main Application */}
+        <Route element={<MainLayout />}>
+          <Route path="/" element={<Home />} />
+          <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/upload" element={<UploadVideo />} />
+          <Route path="/watch/:videoId" element={<WatchVideo />} />
+          <Route path="/playlist" element={<Playlist />} />
+          <Route path="/history" element={<History />} />
+          <Route path="/subscriptions" element={<Subscription />} />
+          <Route path="/search" element={<Search />} />
+          <Route path="/profile/:username" element={<Profile />} />
+          <Route path="/settings" element={<Settings />} />
+        </Route>
 
         <Route path="*" element={<NotFound />} />
+
       </Routes>
     </BrowserRouter>
   );

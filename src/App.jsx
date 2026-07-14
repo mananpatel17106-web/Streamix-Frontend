@@ -1,11 +1,7 @@
-import Loader from "./components/ui/Loader";
+import AppRoutes from "./routes/AppRoutes";
 
 function App() {
-  return (
-    <div className="bg-[#0f0f0f]">
-      <Loader fullScreen text="Loading Streamix..." />
-    </div>
-  );
+  return <AppRoutes />;
 }
 
 export default App;
