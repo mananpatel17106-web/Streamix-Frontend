@@ -1,11 +1,21 @@
-import axiosInstance from "./api/axios";
+import Button from "./components/ui/Button";
 
 function App() {
-  console.log(axiosInstance.defaults.baseURL);
-
   return (
-    <div className="flex min-h-screen items-center justify-center">
-      <h1 className="text-3xl font-bold">Streamix 🚀</h1>
+    <div className="flex min-h-screen items-center justify-center gap-4 bg-[#0f0f0f]">
+      <Button>Primary</Button>
+
+      <Button variant="secondary">
+        Secondary
+      </Button>
+
+      <Button variant="danger">
+        Delete
+      </Button>
+
+      <Button variant="ghost">
+        Ghost
+      </Button>
     </div>
   );
 }
