@@ -30,9 +30,9 @@ const SearchBar = ({
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    if (onSubmit) {
-      onSubmit(query.trim());
-    }
+    if (!search.trim()) return;
+
+    onSubmit(search);
   };
 
   const clearInput = () => {
@@ -49,8 +49,7 @@ const SearchBar = ({
   return (
     <form
       onSubmit={handleSubmit}
-      className="flex w-full max-w-2xl items-center"
-    >
+      className="flex w-full max-w-2xl items-center">
       <div className="group relative flex w-full items-center">
         <Search
           size={18}
@@ -70,8 +69,7 @@ const SearchBar = ({
           <button
             type="button"
             onClick={clearInput}
-            className="absolute right-12 rounded-md p-1 text-zinc-500 transition hover:bg-zinc-800 hover:text-white"
-          >
+            className="absolute right-12 rounded-md p-1 text-zinc-500 transition hover:bg-zinc-800 hover:text-white">
             <X size={16} />
           </button>
         )}

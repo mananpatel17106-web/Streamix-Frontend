@@ -1,41 +1,39 @@
 import VideoCard from "./VideoCard";
-import VideoGridSkeleton from "./VideoGridSkeleton";
 
 const VideoGrid = ({
   videos = [],
-  loading = false,
-  emptyMessage = "No videos found.",
 }) => {
-  if (loading) {
-    return <VideoGridSkeleton />;
-  }
-
   if (!videos.length) {
-    return (
-      <section className="flex min-h-[60vh] items-center justify-center">
-        <div className="max-w-md text-center">
-          <h2 className="text-xl font-semibold text-white">
-            {emptyMessage}
-          </h2>
+  return (
+    <div className="flex h-[60vh] flex-col items-center justify-center">
 
-          <p className="mt-2 text-sm text-zinc-500">
-            Try searching with different keywords or explore other categories.
-          </p>
-        </div>
-      </section>
-    );
-  }
+      <div className="mb-6 rounded-full bg-zinc-900 p-6 text-4xl">
+        🎬
+      </div>
+
+      <h2 className="text-3xl font-bold text-white">
+        No Videos Yet
+      </h2>
+
+      <p className="mt-3 text-zinc-500">
+        Upload your first video or change search filters.
+      </p>
+
+    </div>
+  );
+}
 
   return (
-    <section
+    <div
       className="
-        grid
-        gap-6
-        sm:grid-cols-2
-        lg:grid-cols-3
-        xl:grid-cols-4
-        2xl:grid-cols-5
-      "
+      grid
+      gap-6
+
+      sm:grid-cols-2
+      lg:grid-cols-3
+      xl:grid-cols-4
+      2xl:grid-cols-5
+    "
     >
       {videos.map((video) => (
         <VideoCard
@@ -43,7 +41,7 @@ const VideoGrid = ({
           video={video}
         />
       ))}
-    </section>
+    </div>
   );
 };
 

@@ -32,7 +32,7 @@ const Navbar = ({
 
         {/* Search */}
 
-        <div className="flex-1">
+        <div className="mx-auto w-full max-w-3xl">
           <SearchBar
             onSubmit={onSearch}
           />
@@ -43,7 +43,7 @@ const Navbar = ({
         <div className="flex items-center gap-3">
           <button
             onClick={() => navigate("/upload")}
-            className="hidden items-center gap-2 rounded-xl border border-zinc-800 bg-zinc-900 px-4 py-2 text-sm font-medium text-zinc-300 transition hover:border-zinc-700 hover:text-white md:flex"
+            className="flex items-center gap-2 rounded-xl border border-zinc-800 bg-zinc-900 px-4 py-2 text-sm font-medium text-white transition hover:border-zinc-700 hover:bg-zinc-800"
           >
             <Upload size={18} />
             Upload

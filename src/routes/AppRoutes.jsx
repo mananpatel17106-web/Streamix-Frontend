@@ -15,6 +15,7 @@ import NotFound from "../pages/NotFound";
 
 import GuestRoute from "./GuestRoute";
 import ProtectedRoute from "./ProtectedRoute";
+import Search from "../pages/Search";
 
 const AppRoutes = () => {
   return (
@@ -44,6 +45,7 @@ const AppRoutes = () => {
           <Route path="/dashboard" element={<Dashboard />} />
 
           <Route path="/profile/:username" element={<Profile />} />
+          <Route path="/search" element={<Search />} />
         </Route>
       </Route>
 
