@@ -1,21 +1,26 @@
 import Button from "./components/ui/Button";
+import Input from "./components/ui/Input";
 
 function App() {
   return (
-    <div className="flex min-h-screen items-center justify-center gap-4 bg-[#0f0f0f]">
-      <Button>Primary</Button>
+    <div className="flex min-h-screen items-center justify-center bg-[#0f0f0f]">
+      <div className="w-full max-w-md space-y-5 rounded-xl bg-neutral-950 p-8">
+        <Input
+          label="Email"
+          type="email"
+          placeholder="Enter your email"
+        />
 
-      <Button variant="secondary">
-        Secondary
-      </Button>
+        <Input
+          label="Password"
+          type="password"
+          placeholder="Enter your password"
+        />
 
-      <Button variant="danger">
-        Delete
-      </Button>
-
-      <Button variant="ghost">
-        Ghost
-      </Button>
+        <Button fullWidth>
+          Login
+        </Button>
+      </div>
     </div>
   );
 }
