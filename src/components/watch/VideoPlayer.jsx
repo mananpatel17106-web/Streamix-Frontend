@@ -1,111 +1,81 @@
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import {
-  Maximize,
-  Minimize,
-  Pause,
+  Loader2,
   Play,
+  Pause,
   Volume2,
   VolumeX,
+  Maximize,
 } from "lucide-react";
 
-const VideoPlayer = ({ src, poster }) => {
+const VideoPlayer = ({ video }) => {
   const videoRef = useRef(null);
 
+  const [loading, setLoading] = useState(true);
   const [playing, setPlaying] = useState(false);
   const [muted, setMuted] = useState(false);
-  const [fullscreen, setFullscreen] = useState(false);
 
   const togglePlay = () => {
-    const video = videoRef.current;
+    if (!videoRef.current) return;
 
-    if (!video) return;
-
-    if (video.paused) {
-      video.play();
+    if (videoRef.current.paused) {
+      videoRef.current.play();
       setPlaying(true);
     } else {
-      video.pause();
+      videoRef.current.pause();
       setPlaying(false);
     }
   };
 
   const toggleMute = () => {
-    const video = videoRef.current;
+    if (!videoRef.current) return;
 
-    if (!video) return;
-
-    video.muted = !video.muted;
-    setMuted(video.muted);
+    videoRef.current.muted = !muted;
+    setMuted(!muted);
   };
 
-  const toggleFullscreen = async () => {
-    const video = videoRef.current;
+  const fullscreen = () => {
+    if (!videoRef.current) return;
 
-    if (!video) return;
-
-    if (!document.fullscreenElement) {
-      await video.requestFullscreen();
-      setFullscreen(true);
-    } else {
-      await document.exitFullscreen();
-      setFullscreen(false);
+    if (videoRef.current.requestFullscreen) {
+      videoRef.current.requestFullscreen();
     }
   };
 
-  useEffect(() => {
-    const handleKeyDown = (e) => {
-      if (
-        document.activeElement.tagName === "INPUT" ||
-        document.activeElement.tagName === "TEXTAREA"
-      ) {
-        return;
-      }
-
-      switch (e.code) {
-        case "Space":
-          e.preventDefault();
-          togglePlay();
-          break;
-
-        case "KeyM":
-          toggleMute();
-          break;
-
-        case "KeyF":
-          toggleFullscreen();
-          break;
-
-        default:
-          break;
-      }
-    };
-
-    window.addEventListener("keydown", handleKeyDown);
-
-    return () => {
-      window.removeEventListener("keydown", handleKeyDown);
-    };
-  }, []);
-
   return (
     <div className="overflow-hidden rounded-2xl border border-zinc-800 bg-black">
-      <div className="relative aspect-video">
+
+      <div className="relative">
+
+        {loading && (
+          <div className="absolute inset-0 z-10 flex items-center justify-center bg-black">
+            <Loader2
+              className="animate-spin text-white"
+              size={40}
+            />
+          </div>
+        )}
+
         <video
           ref={videoRef}
-          src={src}
-          poster={poster}
+          src={video?.videoFile}
+          poster={video?.thumbnail}
           controls
-          className="h-full w-full"
+          className="aspect-video w-full bg-black"
+          onLoadedData={() => setLoading(false)}
           onPlay={() => setPlaying(true)}
           onPause={() => setPlaying(false)}
         />
 
-        <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent" />
+      </div>
 
-        <div className="absolute bottom-5 left-5 flex gap-3">
+      <div className="flex items-center justify-between border-t border-zinc-800 bg-zinc-950 px-4 py-3">
+
+        <div className="flex items-center gap-2">
+
           <button
             onClick={togglePlay}
-            className="pointer-events-auto rounded-full bg-black/70 p-3 text-white backdrop-blur transition hover:bg-black"
+            className="rounded-lg p-2 transition hover:bg-zinc-800"
           >
             {playing ? (
               <Pause size={18} />
@@ -116,7 +86,7 @@ const VideoPlayer = ({ src, poster }) => {
 
           <button
             onClick={toggleMute}
-            className="pointer-events-auto rounded-full bg-black/70 p-3 text-white backdrop-blur transition hover:bg-black"
+            className="rounded-lg p-2 transition hover:bg-zinc-800"
           >
             {muted ? (
               <VolumeX size={18} />
@@ -125,18 +95,17 @@ const VideoPlayer = ({ src, poster }) => {
             )}
           </button>
 
-          <button
-            onClick={toggleFullscreen}
-            className="pointer-events-auto rounded-full bg-black/70 p-3 text-white backdrop-blur transition hover:bg-black"
-          >
-            {fullscreen ? (
-              <Minimize size={18} />
-            ) : (
-              <Maximize size={18} />
-            )}
-          </button>
         </div>
+
+        <button
+          onClick={fullscreen}
+          className="rounded-lg p-2 transition hover:bg-zinc-800"
+        >
+          <Maximize size={18} />
+        </button>
+
       </div>
+
     </div>
   );
 };
