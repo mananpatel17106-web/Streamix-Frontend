@@ -1,183 +1,135 @@
-import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
-import { useDispatch } from "react-redux";
+import { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { useNavigate, useParams } from "react-router-dom";
+
+import Loader from "../components/ui/Loader";
 
 import VideoPlayer from "../components/watch/VideoPlayer";
 import VideoInfo from "../components/watch/VideoInfo";
 import VideoActions from "../components/watch/VideoActions";
-import ChannelCard from "../components/watch/ChannelCard";
-import CommentSection from "../components/watch/CommentSection";
-import RelatedVideos from "../components/watch/RelatedVideos";
+import SuggestedVideos from "../components/watch/SuggestedVideos";
+import CommentSection from "../components/comment/CommentSection";
 
-import videoService from "../services/video.service";
-// import commentService from "../services/comment.service";
-// import subscriptionService from "../services/subscription.service";
+import {
+  getVideoById,
+  getVideos,
+} from "../store/slices/videoSlice";
 
 const WatchVideo = () => {
   const { videoId } = useParams();
 
+  const navigate = useNavigate();
+
   const dispatch = useDispatch();
 
-  const [video, setVideo] = useState(null);
-  const [comments, setComments] = useState([]);
-  const [relatedVideos, setRelatedVideos] = useState([]);
-
-  const [loading, setLoading] = useState(true);
-
-  const [liked, setLiked] = useState(false);
-  const [disliked, setDisliked] = useState(false);
-  const [subscribed, setSubscribed] = useState(false);
+  const {
+    currentVideo,
+    videos,
+    loading,
+    error,
+  } = useSelector(
+    (state) => state.video
+  );
 
   useEffect(() => {
-    loadVideo();
+    if (!videoId) return;
+
+    dispatch(getVideoById(videoId));
+
+    dispatch(
+      getVideos({
+        page: 1,
+        limit: 10,
+      })
+    );
+  }, [dispatch, videoId]);
+
+  useEffect(() => {
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth",
+    });
   }, [videoId]);
 
-  const loadVideo = async () => {
-    try {
-      setLoading(true);
-
-      const response = await videoService.getVideoById(videoId);
-
-      const data = response.data;
-
-      setVideo(data);
-
-      /*
-      loadComments();
-      loadRelatedVideos();
-      */
-
-    } catch (error) {
-      console.log(error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleLike = () => {
-    setLiked((prev) => !prev);
-
-    if (disliked) {
-      setDisliked(false);
-    }
-
-    // API
-  };
-
-  const handleDislike = () => {
-    setDisliked((prev) => !prev);
-
-    if (liked) {
-      setLiked(false);
-    }
-
-    // API
-  };
-
-  const handleSubscribe = () => {
-    setSubscribed((prev) => !prev);
-
-    // API
-  };
-
-  const handleShare = async () => {
-    try {
-      await navigator.clipboard.writeText(window.location.href);
-
-      // toast.success("Copied")
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
-  const handleSave = () => {};
-
-  const handleDownload = () => {};
-
-  const handleAddComment = (text) => {
-    console.log(text);
-  };
-
-  if (loading) {
+  if (loading && !currentVideo) {
     return (
-      <div className="flex h-[70vh] items-center justify-center">
-        Loading...
+      <div className="flex h-[80vh] items-center justify-center">
+        <Loader />
       </div>
     );
   }
 
-  if (!video) {
+  if (error) {
     return (
-      <div className="flex h-[70vh] items-center justify-center text-white">
-        Video not found
+      <div className="flex h-[80vh] flex-col items-center justify-center">
+
+        <h2 className="text-2xl font-bold text-red-500">
+          Failed to load video
+        </h2>
+
+        <p className="mt-3 text-zinc-500">
+          {error}
+        </p>
+
+        <button
+          onClick={() => navigate("/")}
+          className="mt-6 rounded-xl bg-white px-6 py-3 font-medium text-black"
+        >
+          Back Home
+        </button>
+
+      </div>
+    );
+  }
+
+  if (!currentVideo) {
+    return (
+      <div className="flex h-[80vh] items-center justify-center">
+
+        <h2 className="text-2xl font-semibold text-zinc-500">
+          Video Not Found
+        </h2>
+
       </div>
     );
   }
 
   return (
-    <div className="grid gap-8 xl:grid-cols-[1fr_380px]">
+    <section className="mx-auto grid max-w-[1800px] gap-8 xl:grid-cols-[1fr_380px]">
 
-      <section>
+      {/* Left */}
+
+      <div>
 
         <VideoPlayer
-          src={video.videoFile}
-          poster={video.thumbnail}
+          video={currentVideo}
         />
 
         <VideoInfo
-          video={video}
-        />
-
-        <ChannelCard
-          channel={video.owner}
-          isSubscribed={subscribed}
-          onSubscribe={handleSubscribe}
+          video={currentVideo}
         />
 
         <VideoActions
-          video={video}
-          isLiked={liked}
-          isDisliked={disliked}
-          onLike={handleLike}
-          onDislike={handleDislike}
-          onShare={handleShare}
-          onSave={handleSave}
-          onDownload={handleDownload}
+          video={currentVideo}
         />
-                <CommentSection
-          comments={comments}
-          currentUser={{
-            _id: "current-user-id",
-            username: "manan",
-            avatar: "",
-          }}
-          totalComments={comments.length}
-          loading={false}
-          onAddComment={handleAddComment}
-          onLikeComment={(comment) => {
-            console.log("Like Comment:", comment);
-          }}
-          onReplyComment={(comment) => {
-            console.log("Reply Comment:", comment);
-          }}
-          onEditComment={(comment) => {
-            console.log("Edit Comment:", comment);
-          }}
-          onDeleteComment={(comment) => {
-            console.log("Delete Comment:", comment);
-          }}
+
+        <CommentSection
+          videoId={videoId}
         />
-      </section>
 
-      {/* Related Videos */}
+      </div>
 
-      <aside className="space-y-4">
-        <RelatedVideos
-          videos={relatedVideos}
-          loading={loading}
+      {/* Right */}
+
+      <aside className="space-y-5">
+                <SuggestedVideos
+          currentVideoId={videoId}
+          videos={videos.filter(
+            (video) => video._id !== videoId
+          )}
         />
       </aside>
-    </div>
+    </section>
   );
 };
 
