@@ -1,55 +1,81 @@
 import axiosInstance from "../api/axios";
 
 class AuthService {
-  register(data) {
-    return axiosInstance.post("/users/register", data, {
+  async register(data) {
+    const response = await axiosInstance.post("/users/register", data, {
       headers: {
         "Content-Type": "multipart/form-data",
       },
     });
+
+    return response.data;
   }
 
-  login(data) {
-    return axiosInstance.post("/users/login", data);
+  async login(data) {
+    const response = await axiosInstance.post("/users/login", data);
+    return response.data;
   }
 
-  logout() {
-    return axiosInstance.post("/users/logout");
+  async logout() {
+    const response = await axiosInstance.post("/users/logout");
+    return response.data;
   }
 
-  getCurrentUser() {
-    return axiosInstance.get("/users/current-user");
+  async getCurrentUser() {
+    const response = await axiosInstance.get("/users/current-user");
+    return response.data;
   }
 
-  refreshAccessToken() {
-    return axiosInstance.post("/users/refresh-token");
+  async refreshAccessToken() {
+    const response = await axiosInstance.post("/users/refresh-token");
+    return response.data;
   }
 
-  changePassword(data) {
-    return axiosInstance.post("/users/change-password", data);
+  async changePassword(data) {
+    const response = await axiosInstance.post(
+      "/users/change-password",
+      data
+    );
+
+    return response.data;
   }
 
-  updateAccount(data) {
-    return axiosInstance.patch("/users/update-account", data);
+  async updateAccount(data) {
+    const response = await axiosInstance.patch(
+      "/users/update-account",
+      data
+    );
+
+    return response.data;
   }
 
-  updateAvatar(formData) {
-    return axiosInstance.patch("/users/avatar", formData, {
-      headers: {
-        "Content-Type": "multipart/form-data",
-      },
-    });
+  async updateAvatar(formData) {
+    const response = await axiosInstance.patch(
+      "/users/avatar",
+      formData,
+      {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      }
+    );
+
+    return response.data;
   }
 
-  updateCoverImage(formData) {
-    return axiosInstance.patch("/users/cover-image", formData, {
-      headers: {
-        "Content-Type": "multipart/form-data",
-      },
-    });
+  async updateCoverImage(formData) {
+    const response = await axiosInstance.patch(
+      "/users/cover-image",
+      formData,
+      {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      }
+    );
+
+    return response.data;
   }
 }
 
-const authService = new AuthService();
-
-export default authService;
+export default new AuthService();
