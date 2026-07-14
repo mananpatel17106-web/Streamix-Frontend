@@ -7,11 +7,6 @@ const initialState = {
 
   loading: false,
   error: null,
-
-  page: 1,
-  limit: 12,
-
-  hasMore: true,
 };
 
 export const getVideos = createAsyncThunk(
@@ -69,66 +64,59 @@ const videoSlice = createSlice({
 
     resetVideos: (state) => {
       state.videos = [];
-      state.page = 1;
-      state.hasMore = true;
     },
   },
 
   extraReducers: (builder) => {
     builder
 
-      // Get Videos
+      // ==========================
+      // GET ALL VIDEOS
+      // ==========================
 
       .addCase(getVideos.pending, (state) => {
         state.loading = true;
+        state.error = null;
       })
 
       .addCase(getVideos.fulfilled, (state, action) => {
         state.loading = false;
 
-        const docs = action.payload?.data?.docs || [];
-
-        if (state.page === 1) {
-          state.videos = docs;
-        } else {
-          state.videos.push(...docs);
-        }
-
-        state.hasMore =
-          docs.length >= state.limit;
-
-        state.page += 1;
+        state.videos = action.payload?.data?.docs || [];
       })
 
       .addCase(getVideos.rejected, (state, action) => {
         state.loading = false;
-
         state.error = action.payload;
       })
 
-      // Get Single Video
+      // ==========================
+      // GET SINGLE VIDEO
+      // ==========================
 
       .addCase(getVideoById.pending, (state) => {
         state.loading = true;
+        state.error = null;
       })
 
       .addCase(getVideoById.fulfilled, (state, action) => {
         state.loading = false;
 
-        state.currentVideo =
-          action.payload?.data;
+        state.currentVideo = action.payload?.data;
       })
 
       .addCase(getVideoById.rejected, (state, action) => {
         state.loading = false;
-
         state.error = action.payload;
       })
 
-      // Publish
+      // ==========================
+      // PUBLISH VIDEO
+      // ==========================
 
       .addCase(publishVideo.pending, (state) => {
         state.loading = true;
+        state.error = null;
       })
 
       .addCase(publishVideo.fulfilled, (state) => {
@@ -137,7 +125,6 @@ const videoSlice = createSlice({
 
       .addCase(publishVideo.rejected, (state, action) => {
         state.loading = false;
-
         state.error = action.payload;
       });
   },
