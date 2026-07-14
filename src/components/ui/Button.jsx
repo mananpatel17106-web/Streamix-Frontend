@@ -2,7 +2,7 @@ import PropTypes from "prop-types";
 
 const variants = {
   primary:
-    "bg-white text-black hover:bg-neutral-200 focus:ring-white",
+    "bg-primary text-background hover:bg-neutral-200 focus:ring-white",
   secondary:
     "bg-neutral-800 text-white hover:bg-neutral-700 focus:ring-neutral-500",
   danger:

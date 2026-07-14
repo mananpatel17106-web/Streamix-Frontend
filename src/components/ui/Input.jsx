@@ -29,7 +29,7 @@ const Input = forwardRef(
             w-full
             rounded-lg
             border
-            bg-neutral-900
+            bg-card
             px-4
             py-3
             text-white
@@ -39,7 +39,7 @@ const Input = forwardRef(
             ${
               error
                 ? "border-red-500 focus:border-red-500"
-                : "border-neutral-700 focus:border-white"
+                : "border-border focus:border-white"
             }
             ${className}
           `}

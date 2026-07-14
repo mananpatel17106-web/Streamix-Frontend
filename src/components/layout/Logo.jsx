@@ -1,22 +1,43 @@
-import { Play } from "lucide-react";
 import { Link } from "react-router-dom";
+import { Play } from "lucide-react";
+import { motion } from "framer-motion";
 
-const Logo = () => {
+const Logo = ({ collapsed = false }) => {
   return (
     <Link
       to="/"
-      className="flex items-center gap-2"
+      className="inline-flex items-center gap-3 select-none"
+      aria-label="Streamix Home"
     >
-      <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-white">
+      <motion.div
+        whileHover={{ scale: 1.06 }}
+        whileTap={{ scale: 0.96 }}
+        transition={{ duration: 0.2 }}
+        className="flex h-11 w-11 items-center justify-center rounded-xl border border-white/10 bg-zinc-900 shadow-lg shadow-black/20"
+      >
         <Play
           size={20}
-          className="fill-black text-black"
+          strokeWidth={2.3}
+          className="translate-x-[1px] fill-white text-white"
         />
-      </div>
+      </motion.div>
 
-      <span className="text-2xl font-bold tracking-tight">
-        Streamix
-      </span>
+      {!collapsed && (
+        <motion.div
+          initial={{ opacity: 0, x: -6 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.25 }}
+          className="flex flex-col leading-none"
+        >
+          <span className="text-lg font-semibold tracking-tight text-white">
+            Streamix
+          </span>
+
+          <span className="text-[11px] font-medium uppercase tracking-[0.22em] text-zinc-500">
+            Premium Streaming
+          </span>
+        </motion.div>
+      )}
     </Link>
   );
 };

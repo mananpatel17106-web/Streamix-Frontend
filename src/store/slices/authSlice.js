@@ -4,45 +4,58 @@ import authService from "../../services/auth.service";
 const initialState = {
   user: null,
   isAuthenticated: false,
-  isLoading: false,
+  loading: false,
   error: null,
 };
 
-export const loginUser = createAsyncThunk(
-  "auth/loginUser",
-  async (credentials, { rejectWithValue }) => {
+export const registerUser = createAsyncThunk(
+  "auth/register",
+  async (formData, thunkAPI) => {
     try {
-      return await authService.login(credentials);
+      return await authService.register(formData);
     } catch (error) {
-      return rejectWithValue(
-        error.response?.data?.message || "Login failed"
+      return thunkAPI.rejectWithValue(
+        error.response?.data?.message || error.message
       );
     }
   }
 );
 
-export const getCurrentUser = createAsyncThunk(
-  "auth/getCurrentUser",
-  async (_, { rejectWithValue }) => {
+export const loginUser = createAsyncThunk(
+  "auth/login",
+  async (credentials, thunkAPI) => {
     try {
-      return await authService.getCurrentUser();
+      return await authService.login(credentials);
     } catch (error) {
-      return rejectWithValue(
-        error.response?.data?.message || "Failed to fetch user"
+      return thunkAPI.rejectWithValue(
+        error.response?.data?.message || error.message
       );
     }
   }
 );
 
 export const logoutUser = createAsyncThunk(
-  "auth/logoutUser",
-  async (_, { rejectWithValue }) => {
+  "auth/logout",
+  async (_, thunkAPI) => {
     try {
       await authService.logout();
       return true;
     } catch (error) {
-      return rejectWithValue(
-        error.response?.data?.message || "Logout failed"
+      return thunkAPI.rejectWithValue(
+        error.response?.data?.message || error.message
+      );
+    }
+  }
+);
+
+export const getCurrentUser = createAsyncThunk(
+  "auth/currentUser",
+  async (_, thunkAPI) => {
+    try {
+      return await authService.getCurrentUser();
+    } catch (error) {
+      return thunkAPI.rejectWithValue(
+        error.response?.data?.message || error.message
       );
     }
   }
@@ -50,9 +63,18 @@ export const logoutUser = createAsyncThunk(
 
 const authSlice = createSlice({
   name: "auth",
+
   initialState,
+
   reducers: {
     clearAuthError: (state) => {
+      state.error = null;
+    },
+
+    resetAuth: (state) => {
+      state.user = null;
+      state.isAuthenticated = false;
+      state.loading = false;
       state.error = null;
     },
   },
@@ -60,49 +82,89 @@ const authSlice = createSlice({
   extraReducers: (builder) => {
     builder
 
+      // Register
+
+      .addCase(registerUser.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+
+      .addCase(registerUser.fulfilled, (state) => {
+        state.loading = false;
+      })
+
+      .addCase(registerUser.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
+
       // Login
+
       .addCase(loginUser.pending, (state) => {
-        state.isLoading = true;
+        state.loading = true;
         state.error = null;
       })
 
       .addCase(loginUser.fulfilled, (state, action) => {
-        state.isLoading = false;
+        state.loading = false;
+
+        state.user = action.payload?.data;
+
         state.isAuthenticated = true;
-        state.user = action.payload.data;
       })
 
       .addCase(loginUser.rejected, (state, action) => {
-        state.isLoading = false;
+        state.loading = false;
         state.error = action.payload;
       })
 
       // Current User
+
       .addCase(getCurrentUser.pending, (state) => {
-        state.isLoading = true;
+        state.loading = true;
       })
 
       .addCase(getCurrentUser.fulfilled, (state, action) => {
-        state.isLoading = false;
+        state.loading = false;
+
+        state.user = action.payload?.data;
+
         state.isAuthenticated = true;
-        state.user = action.payload.data;
       })
 
       .addCase(getCurrentUser.rejected, (state) => {
-        state.isLoading = false;
-        state.isAuthenticated = false;
+        state.loading = false;
+
         state.user = null;
+
+        state.isAuthenticated = false;
       })
 
       // Logout
+
+      .addCase(logoutUser.pending, (state) => {
+        state.loading = true;
+      })
+
       .addCase(logoutUser.fulfilled, (state) => {
+        state.loading = false;
+
         state.user = null;
+
         state.isAuthenticated = false;
-        state.error = null;
+      })
+
+      .addCase(logoutUser.rejected, (state, action) => {
+        state.loading = false;
+
+        state.error = action.payload;
       });
   },
 });
 
-export const { clearAuthError } = authSlice.actions;
+export const {
+  clearAuthError,
+  resetAuth,
+} = authSlice.actions;
 
 export default authSlice.reducer;

@@ -16,12 +16,12 @@ import Search from "../pages/Search";
 import Profile from "../pages/Profile";
 import Settings from "../pages/Settings";
 import NotFound from "../pages/NotFound";
+import WatchVideo from "../pages/WatchVideo";
 
 const AppRoutes = () => {
   return (
     <BrowserRouter>
       <Routes>
-
         {/* Auth Routes */}
         <Route element={<AuthLayout />}>
           <Route path="/login" element={<Login />} />
@@ -40,10 +40,10 @@ const AppRoutes = () => {
           <Route path="/search" element={<Search />} />
           <Route path="/profile/:username" element={<Profile />} />
           <Route path="/settings" element={<Settings />} />
+          <Route path="/watch/:videoId" element={<WatchVideo />} />
         </Route>
 
         <Route path="*" element={<NotFound />} />
-
       </Routes>
     </BrowserRouter>
   );
