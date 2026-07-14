@@ -8,7 +8,7 @@ import VideoPlayer from "../components/watch/VideoPlayer";
 import VideoInfo from "../components/watch/VideoInfo";
 import VideoActions from "../components/watch/VideoActions";
 import SuggestedVideos from "../components/watch/SuggestedVideos";
-import CommentSection from "../components/comment/CommentSection";
+// import CommentSection from "../components/comment/CommentSection";
 
 import {
   getVideoById,

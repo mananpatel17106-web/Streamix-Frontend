@@ -1,99 +1,103 @@
+import { useState } from "react";
 import {
   ThumbsUp,
-  ThumbsDown,
   Share2,
+  Bookmark,
+  Flag,
   ListPlus,
-  Download,
 } from "lucide-react";
-import { motion } from "framer-motion";
 
-const ActionButton = ({
-  icon: Icon,
-  label,
-  count,
-  active = false,
-  onClick,
-}) => {
-  return (
-    <motion.button
-      whileTap={{ scale: 0.96 }}
-      whileHover={{ y: -2 }}
-      transition={{ duration: 0.15 }}
-      onClick={onClick}
-      className={`flex items-center gap-2 rounded-xl border px-4 py-2.5 transition-all ${
-        active
-          ? "border-white bg-white text-black"
-          : "border-zinc-800 bg-zinc-900 text-zinc-300 hover:border-zinc-700 hover:bg-zinc-800 hover:text-white"
-      }`}
-    >
-      <Icon size={18} />
+const VideoActions = ({ video }) => {
+  const [liked, setLiked] = useState(false);
 
-      <span className="text-sm font-medium">
-        {label}
-      </span>
+  const [saved, setSaved] = useState(false);
 
-      {count !== undefined && (
-        <span className="text-xs opacity-80">
-          {count}
-        </span>
-      )}
-    </motion.button>
-  );
-};
+  const handleShare = async () => {
+    try {
+      if (navigator.share) {
+        await navigator.share({
+          title: video?.title,
+          url: window.location.href,
+        });
+      } else {
+        await navigator.clipboard.writeText(
+          window.location.href
+        );
 
-const VideoActions = ({
-  video,
-  isLiked = false,
-  isDisliked = false,
-  onLike,
-  onDislike,
-  onShare,
-  onSave,
-  onDownload,
-}) => {
-  if (!video) return null;
-
-  const formatNumber = (num = 0) => {
-    if (num >= 1000000) return `${(num / 1000000).toFixed(1)}M`;
-    if (num >= 1000) return `${(num / 1000).toFixed(1)}K`;
-    return num;
+        alert("Link Copied");
+      }
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   return (
-    <div className="mt-6 flex flex-wrap items-center gap-3">
-      <ActionButton
-        icon={ThumbsUp}
-        label="Like"
-        count={formatNumber(video.likesCount)}
-        active={isLiked}
-        onClick={onLike}
-      />
+    <section className="mt-6 flex flex-wrap items-center gap-3">
 
-      <ActionButton
-        icon={ThumbsDown}
-        label="Dislike"
-        active={isDisliked}
-        onClick={onDislike}
-      />
+      {/* Like */}
 
-      <ActionButton
-        icon={Share2}
-        label="Share"
-        onClick={onShare}
-      />
+      <button
+        onClick={() => setLiked(!liked)}
+        className={`flex items-center gap-2 rounded-xl border px-5 py-3 transition
+        ${
+          liked
+            ? "border-white bg-white text-black"
+            : "border-zinc-800 bg-zinc-900 text-white hover:bg-zinc-800"
+        }`}
+      >
+        <ThumbsUp size={18} />
 
-      <ActionButton
-        icon={ListPlus}
-        label="Save"
-        onClick={onSave}
-      />
+        {video?.likesCount || 0}
+      </button>
 
-      <ActionButton
-        icon={Download}
-        label="Download"
-        onClick={onDownload}
-      />
-    </div>
+      {/* Playlist */}
+
+      <button
+        className="flex items-center gap-2 rounded-xl border border-zinc-800 bg-zinc-900 px-5 py-3 text-white transition hover:bg-zinc-800"
+      >
+        <ListPlus size={18} />
+
+        Playlist
+      </button>
+
+      {/* Save */}
+
+      <button
+        onClick={() => setSaved(!saved)}
+        className={`flex items-center gap-2 rounded-xl border px-5 py-3 transition
+        ${
+          saved
+            ? "border-white bg-white text-black"
+            : "border-zinc-800 bg-zinc-900 text-white hover:bg-zinc-800"
+        }`}
+      >
+        <Bookmark size={18} />
+
+        Save
+      </button>
+
+      {/* Share */}
+
+      <button
+        onClick={handleShare}
+        className="flex items-center gap-2 rounded-xl border border-zinc-800 bg-zinc-900 px-5 py-3 text-white transition hover:bg-zinc-800"
+      >
+        <Share2 size={18} />
+
+        Share
+      </button>
+
+      {/* Report */}
+
+      <button
+        className="flex items-center gap-2 rounded-xl border border-zinc-800 bg-zinc-900 px-5 py-3 text-white transition hover:bg-zinc-800"
+      >
+        <Flag size={18} />
+
+        Report
+      </button>
+
+    </section>
   );
 };
 
