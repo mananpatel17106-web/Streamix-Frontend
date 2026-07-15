@@ -1,27 +1,65 @@
-import { createSlice } from "@reduxjs/toolkit";
+import {
+  createAsyncThunk,
+  createSlice,
+} from "@reduxjs/toolkit";
+
+import subscriptionService from "../../services/subscription.service";
 
 const initialState = {
-  subscriptions: [],
-  isLoading: false,
+  loading: false,
+  error: null,
 };
+
+export const toggleSubscription =
+  createAsyncThunk(
+    "subscription/toggle",
+    async (channelId, thunkAPI) => {
+      try {
+        return await subscriptionService.toggleSubscription(
+          channelId
+        );
+      } catch (error) {
+        return thunkAPI.rejectWithValue(
+          error.response?.data?.message ||
+            error.message
+        );
+      }
+    }
+  );
 
 const subscriptionSlice = createSlice({
   name: "subscription",
-  initialState,
-  reducers: {
-    setSubscriptions: (state, action) => {
-      state.subscriptions = action.payload;
-    },
 
-    setSubscriptionLoading: (state, action) => {
-      state.isLoading = action.payload;
-    },
+  initialState,
+
+  reducers: {},
+
+  extraReducers: (builder) => {
+    builder
+
+      .addCase(
+        toggleSubscription.pending,
+        (state) => {
+          state.loading = true;
+          state.error = null;
+        }
+      )
+
+      .addCase(
+        toggleSubscription.fulfilled,
+        (state) => {
+          state.loading = false;
+        }
+      )
+
+      .addCase(
+        toggleSubscription.rejected,
+        (state, action) => {
+          state.loading = false;
+          state.error = action.payload;
+        }
+      );
   },
 });
-
-export const {
-  setSubscriptions,
-  setSubscriptionLoading,
-} = subscriptionSlice.actions;
 
 export default subscriptionSlice.reducer;
