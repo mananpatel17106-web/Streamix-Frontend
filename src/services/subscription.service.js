@@ -1,6 +1,8 @@
 import api from "../api/axios";
 
 class SubscriptionService {
+  // Toggle Subscribe
+
   async toggleSubscription(channelId) {
     const response = await api.post(
       `/subscriptions/c/${channelId}`
@@ -9,7 +11,21 @@ class SubscriptionService {
     return response.data;
   }
 
-  async getSubscribedChannels(subscriberId) {
+  // Subscribers of channel
+
+  async getChannelSubscribers(channelId) {
+    const response = await api.get(
+      `/subscriptions/c/${channelId}`
+    );
+
+    return response.data;
+  }
+
+  // Channels user subscribed
+
+  async getSubscribedChannels(
+    subscriberId
+  ) {
     const response = await api.get(
       `/subscriptions/u/${subscriberId}`
     );
