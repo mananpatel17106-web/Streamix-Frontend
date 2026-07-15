@@ -1,4 +1,6 @@
 import { useState } from "react";
+import PlaylistModal from "../playlist/PlaylistModal";
+import CreatePlaylistModal from "../playlist/CreatePlaylistModal";
 import {
   ThumbsUp,
   Share2,
@@ -23,6 +25,10 @@ const VideoActions = ({ video }) => {
   const [saved, setSaved] = useState(false);
 
   const [sharing, setSharing] = useState(false);
+
+  const [playlistModal, setPlaylistModal] = useState(false);
+
+  const [createModal, setCreateModal] = useState(false);
 
   const handleLike = async () => {
     const result = await dispatch(toggleVideoLike(video._id));
@@ -95,7 +101,7 @@ const VideoActions = ({ video }) => {
       {/* Playlist */}
 
       <button
-        onClick={() => toast("Playlist feature coming soon")}
+        onClick={() => setPlaylistModal(true)}
         className="flex h-12 items-center gap-2 rounded-xl border border-zinc-800 bg-zinc-900 px-5 text-white transition hover:bg-zinc-800">
         <ListPlus size={18} />
         Playlist
@@ -150,6 +156,23 @@ const VideoActions = ({ video }) => {
         <Flag size={18} />
         Report
       </button>
+      <>
+        <PlaylistModal
+          open={playlistModal}
+          videoId={video._id}
+          onClose={() => setPlaylistModal(false)}
+          onCreate={() => {
+            setPlaylistModal(false);
+
+            setCreateModal(true);
+          }}
+        />
+
+        <CreatePlaylistModal
+          open={createModal}
+          onClose={() => setCreateModal(false)}
+        />
+      </>
     </section>
   );
 };

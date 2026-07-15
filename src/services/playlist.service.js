@@ -1,48 +1,45 @@
 import api from "../api/axios";
 
 class PlaylistService {
-  async getUserPlaylists() {
-    const response = await api.get("/playlist");
+  async createPlaylist(data) {
+    const response = await api.post("/playlists", data);
+
+    return response.data;
+  }
+
+  async getUserPlaylists(userId) {
+    const response = await api.get(`/playlists/user/${userId}`);
 
     return response.data;
   }
 
   async getPlaylistById(playlistId) {
-    const response = await api.get(
-      `/playlist/${playlistId}`
-    );
+    const response = await api.get(`/playlists/${playlistId}`);
 
     return response.data;
   }
 
-  async createPlaylist(data) {
-    const response = await api.post(
-      "/playlist",
-      data
-    );
+  async updatePlaylist(playlistId, data) {
+    const response = await api.patch(`/playlists/${playlistId}`, data);
 
     return response.data;
   }
 
   async deletePlaylist(playlistId) {
-    const response = await api.delete(
-      `/playlist/${playlistId}`
-    );
+    const response = await api.delete(`/playlists/${playlistId}`);
 
     return response.data;
   }
 
-  async addVideo(playlistId, videoId) {
-    const response = await api.patch(
-      `/playlist/add/${videoId}/${playlistId}`
-    );
+  async addVideo(videoId, playlistId) {
+    const response = await api.patch(`/playlists/add/${videoId}/${playlistId}`);
 
     return response.data;
   }
 
-  async removeVideo(playlistId, videoId) {
+  async removeVideo(videoId, playlistId) {
     const response = await api.patch(
-      `/playlist/remove/${videoId}/${playlistId}`
+      `/playlists/remove/${videoId}/${playlistId}`,
     );
 
     return response.data;
