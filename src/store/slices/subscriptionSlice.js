@@ -8,60 +8,74 @@ import subscriptionService from "../../services/subscription.service";
 const initialState = {
   subscribedChannels: [],
   channelSubscribers: [],
+  channel: null,
   loading: false,
   error: null,
 };
 
-export const toggleSubscription =
-  createAsyncThunk(
-    "subscription/toggle",
-    async (channelId, thunkAPI) => {
-      try {
-        return await subscriptionService.toggleSubscription(
-          channelId
-        );
-      } catch (error) {
-        return thunkAPI.rejectWithValue(
-          error.response?.data?.message ||
-            error.message
-        );
-      }
-    }
-  );
+// Toggle Subscription
 
-export const getSubscribedChannels =
-  createAsyncThunk(
-    "subscription/getSubscribedChannels",
-    async (subscriberId, thunkAPI) => {
-      try {
-        return await subscriptionService.getSubscribedChannels(
-          subscriberId
-        );
-      } catch (error) {
-        return thunkAPI.rejectWithValue(
-          error.response?.data?.message ||
-            error.message
-        );
-      }
+export const toggleSubscription = createAsyncThunk(
+  "subscription/toggleSubscription",
+  async (channelId, thunkAPI) => {
+    try {
+      return await subscriptionService.toggleSubscription(channelId);
+    } catch (error) {
+      return thunkAPI.rejectWithValue(
+        error.response?.data?.message || error.message
+      );
     }
-  );
+  }
+);
 
-export const getChannelSubscribers =
-  createAsyncThunk(
-    "subscription/getChannelSubscribers",
-    async (channelId, thunkAPI) => {
-      try {
-        return await subscriptionService.getChannelSubscribers(
-          channelId
-        );
-      } catch (error) {
-        return thunkAPI.rejectWithValue(
-          error.response?.data?.message ||
-            error.message
-        );
-      }
+// Get Channel Profile
+
+export const getChannelProfile = createAsyncThunk(
+  "subscription/getChannelProfile",
+  async (username, thunkAPI) => {
+    try {
+      return await subscriptionService.getChannelProfile(username);
+    } catch (error) {
+      return thunkAPI.rejectWithValue(
+        error.response?.data?.message || error.message
+      );
     }
-  );
+  }
+);
+
+// Get Subscribed Channels
+
+export const getSubscribedChannels = createAsyncThunk(
+  "subscription/getSubscribedChannels",
+  async (subscriberId, thunkAPI) => {
+    try {
+      return await subscriptionService.getSubscribedChannels(
+        subscriberId
+      );
+    } catch (error) {
+      return thunkAPI.rejectWithValue(
+        error.response?.data?.message || error.message
+      );
+    }
+  }
+);
+
+// Get Channel Subscribers
+
+export const getChannelSubscribers = createAsyncThunk(
+  "subscription/getChannelSubscribers",
+  async (channelId, thunkAPI) => {
+    try {
+      return await subscriptionService.getChannelSubscribers(
+        channelId
+      );
+    } catch (error) {
+      return thunkAPI.rejectWithValue(
+        error.response?.data?.message || error.message
+      );
+    }
+  }
+);
 
 const subscriptionSlice = createSlice({
   name: "subscription",
@@ -72,93 +86,89 @@ const subscriptionSlice = createSlice({
     clearSubscriptionError: (state) => {
       state.error = null;
     },
+
+    clearChannel: (state) => {
+      state.channel = null;
+    },
   },
 
   extraReducers: (builder) => {
     builder
-      .addCase(
-        toggleSubscription.pending,
-        (state) => {
-          state.loading = true;
 
-          state.error = null;
-        }
-      )
+      // Toggle Subscription
 
-      .addCase(
-        toggleSubscription.fulfilled,
-        (state) => {
-          state.loading = false;
-        }
-      )
+      .addCase(toggleSubscription.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
 
-      .addCase(
-        toggleSubscription.rejected,
-        (state, action) => {
-          state.loading = false;
+      .addCase(toggleSubscription.fulfilled, (state) => {
+        state.loading = false;
+      })
 
-          state.error = action.payload;
-        }
-      )
+      .addCase(toggleSubscription.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
 
-      .addCase(
-        getSubscribedChannels.pending,
-        (state) => {
-          state.loading = true;
-          state.error = null;
-        }
-      )
+      // Channel Profile
 
-      .addCase(
-        getSubscribedChannels.fulfilled,
-        (state, action) => {
-          state.loading = false;
+      .addCase(getChannelProfile.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
 
-          state.subscribedChannels =
-            action.payload?.data || [];
-        }
-      )
+      .addCase(getChannelProfile.fulfilled, (state, action) => {
+        state.loading = false;
+        state.channel = action.payload?.data || null;
+      })
 
-      .addCase(
-        getSubscribedChannels.rejected,
-        (state, action) => {
-          state.loading = false;
+      .addCase(getChannelProfile.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
 
-          state.error = action.payload;
-        }
-      )
+      // Subscribed Channels
 
-      .addCase(
-        getChannelSubscribers.pending,
-        (state) => {
-          state.loading = true;
-          state.error = null;
-        }
-      )
+      .addCase(getSubscribedChannels.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
 
-      .addCase(
-        getChannelSubscribers.fulfilled,
-        (state, action) => {
-          state.loading = false;
+      .addCase(getSubscribedChannels.fulfilled, (state, action) => {
+        state.loading = false;
+        state.subscribedChannels =
+          action.payload?.data || [];
+      })
 
-          state.channelSubscribers =
-            action.payload?.data || [];
-        }
-      )
+      .addCase(getSubscribedChannels.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
 
-      .addCase(
-        getChannelSubscribers.rejected,
-        (state, action) => {
-          state.loading = false;
+      // Channel Subscribers
 
-          state.error = action.payload;
-        }
-      );
+      .addCase(getChannelSubscribers.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+
+      .addCase(getChannelSubscribers.fulfilled, (state, action) => {
+        state.loading = false;
+        state.channelSubscribers =
+          action.payload?.data || [];
+      })
+
+      .addCase(getChannelSubscribers.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      });
   },
 });
 
 export const {
   clearSubscriptionError,
+  clearChannel,
 } = subscriptionSlice.actions;
 
 export default subscriptionSlice.reducer;

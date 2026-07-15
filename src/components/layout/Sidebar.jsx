@@ -45,7 +45,7 @@ const Sidebar = () => {
     },
     {
       label: "Your Videos",
-      to: "/dashboard/videos",
+      to : "/your-videos",
       icon: PlaySquare,
     },
     {
