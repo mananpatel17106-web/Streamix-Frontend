@@ -6,6 +6,7 @@ import AppRoutes from "./routes/AppRoutes";
 import Loader from "./components/ui/Loader";
 
 import { getCurrentUser } from "./store/slices/authSlice";
+import { refreshUser } from "./store/slices/authSlice";
 
 const App = () => {
   const dispatch = useDispatch();

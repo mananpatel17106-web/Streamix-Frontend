@@ -1,13 +1,15 @@
 import api from "../api/axios";
 
 class AuthService {
+
   async register(formData) {
     const response = await api.post(
       "/users/register",
       formData,
       {
         headers: {
-          "Content-Type": "multipart/form-data",
+          "Content-Type":
+            "multipart/form-data",
         },
       }
     );
@@ -59,7 +61,7 @@ class AuthService {
 
   async updateAccount(data) {
     const response = await api.patch(
-      "/users/update-account",
+      "/users/update-account-details",
       data
     );
 
@@ -72,7 +74,8 @@ class AuthService {
       formData,
       {
         headers: {
-          "Content-Type": "multipart/form-data",
+          "Content-Type":
+            "multipart/form-data",
         },
       }
     );
@@ -86,7 +89,8 @@ class AuthService {
       formData,
       {
         headers: {
-          "Content-Type": "multipart/form-data",
+          "Content-Type":
+            "multipart/form-data",
         },
       }
     );
@@ -111,4 +115,6 @@ class AuthService {
   }
 }
 
-export default new AuthService();
+const authService = new AuthService();
+
+export default authService;
