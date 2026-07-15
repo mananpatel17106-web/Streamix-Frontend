@@ -5,6 +5,7 @@ import videoReducer from "./slices/videoSlice";
 import likeReducer from "./slices/likeSlice";
 import subscriptionReducer from "./slices/subscriptionSlice";
 import playlistReducer from "./slices/playlistSlice";
+import commentReducer from "./slices/commentSlice"
 
 
 const store = configureStore({
@@ -14,6 +15,7 @@ const store = configureStore({
     like: likeReducer,
     playlist: playlistReducer,
     subscription: subscriptionReducer,
+    comment: commentReducer,
   },
 });
 
