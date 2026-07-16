@@ -1,226 +1,74 @@
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
-  Eye,
-  Heart,
-  Users,
-  Video,
-} from "lucide-react";
+  fetchChannelStats,
+  fetchChannelVideos,
+} from "../../../../cielo/lovable/src/features/dashboard/dashboardSlice";
+import {
+  formatViews,
+  timeAgo,
+} from "../../../../cielo/lovable/src/utils/format";
+import { Link } from "react-router-dom";
 
-import Loader from "../components/ui/Loader";
+function Stat({ label, value }) {
+  return (
+    <div className="card p-5">
+      <div className="text-xs uppercase tracking-widest text-muted">
+        {label}
+      </div>
+      <div className="mt-2 font-display text-3xl font-bold text-gradient">
+        {value}
+      </div>
+    </div>
+  );
+}
 
-const Dashboard = () => {
+export default function Dashboard() {
   const dispatch = useDispatch();
-
-  const { user } = useSelector(
-    (state) => state.auth
-  );
-
-  const { loading } = useSelector(
-    (state) => state.video
-  );
-
+  const { stats, videos } = useSelector((s) => s.dashboard);
   useEffect(() => {
-    // Dashboard API
+    dispatch(fetchChannelStats());
+    dispatch(fetchChannelVideos());
   }, [dispatch]);
 
-  if (loading) {
-    return (
-      <div className="flex h-[70vh] items-center justify-center">
-        <Loader />
-      </div>
-    );
-  }
-
   return (
-    <section className="space-y-8">
-
-      <div>
-
-        <h1 className="text-4xl font-bold text-white">
-          Creator Dashboard
-        </h1>
-
-        <p className="mt-2 text-zinc-500">
-          Welcome back, {user?.fullName}
-        </p>
-
+    <div>
+      <h1 className="font-display text-3xl font-bold">Studio</h1>
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4 mt-6">
+        <Stat label="Total views" value={formatViews(stats?.totalViews || 0)} />
+        <Stat
+          label="Subscribers"
+          value={formatViews(stats?.totalSubscribers || 0)}
+        />
+        <Stat label="Videos" value={stats?.totalVideos || 0} />
+        <Stat label="Likes" value={formatViews(stats?.totalLikes || 0)} />
       </div>
-
-      {/* Stats */}
-
-      <div className="grid gap-6 sm:grid-cols-2 xl:grid-cols-4">
-
-        <div className="rounded-2xl border border-zinc-800 bg-zinc-900 p-6">
-
-          <Eye
-            size={28}
-            className="mb-5 text-blue-400"
-          />
-
-          <h2 className="text-3xl font-bold text-white">
-            0
-          </h2>
-
-          <p className="mt-2 text-zinc-500">
-            Total Views
-          </p>
-
+      <div className="mt-10">
+        <h2 className="font-display font-bold text-xl mb-4">Your videos</h2>
+        <div className="card divide-y divide-border">
+          {videos.length === 0 && (
+            <div className="p-6 text-muted text-sm">No videos yet.</div>
+          )}
+          {videos.map((v) => (
+            <div key={v._id} className="flex items-center gap-4 p-4">
+              <img
+                src={v.thumbnail}
+                className="w-32 aspect-video rounded-lg object-cover"
+                alt=""
+              />
+              <div className="flex-1 min-w-0">
+                <div className="font-semibold truncate">{v.title}</div>
+                <div className="text-xs text-muted">
+                  {formatViews(v.views)} views · {timeAgo(v.createdAt)}
+                </div>
+              </div>
+              <Link to={`/edit/${v._id}`} className="btn-ghost">
+                Edit
+              </Link>
+            </div>
+          ))}
         </div>
-
-        <div className="rounded-2xl border border-zinc-800 bg-zinc-900 p-6">
-
-          <Heart
-            size={28}
-            className="mb-5 text-red-400"
-          />
-
-          <h2 className="text-3xl font-bold text-white">
-            0
-          </h2>
-
-          <p className="mt-2 text-zinc-500">
-            Total Likes
-          </p>
-
-        </div>
-
-        <div className="rounded-2xl border border-zinc-800 bg-zinc-900 p-6">
-
-          <Users
-            size={28}
-            className="mb-5 text-green-400"
-          />
-
-          <h2 className="text-3xl font-bold text-white">
-            0
-          </h2>
-
-          <p className="mt-2 text-zinc-500">
-            Subscribers
-          </p>
-
-        </div>
-
-        <div className="rounded-2xl border border-zinc-800 bg-zinc-900 p-6">
-
-          <Video
-            size={28}
-            className="mb-5 text-yellow-400"
-          />
-
-          <h2 className="text-3xl font-bold text-white">
-            0
-          </h2>
-
-          <p className="mt-2 text-zinc-500">
-            Videos
-          </p>
-
-        </div>
-
       </div>
-            {/* Recent Videos */}
-
-      <div className="rounded-2xl border border-zinc-800 bg-zinc-900 p-6">
-
-        <div className="mb-6 flex items-center justify-between">
-
-          <h2 className="text-xl font-semibold text-white">
-            Recent Videos
-          </h2>
-
-          <button className="rounded-lg border border-zinc-700 px-4 py-2 text-sm text-white transition hover:bg-zinc-800">
-            View All
-          </button>
-
-        </div>
-
-        <div className="overflow-x-auto">
-
-          <table className="w-full">
-
-            <thead>
-
-              <tr className="border-b border-zinc-800 text-left text-zinc-400">
-
-                <th className="pb-4">Title</th>
-
-                <th className="pb-4">Views</th>
-
-                <th className="pb-4">Likes</th>
-
-                <th className="pb-4">Status</th>
-
-              </tr>
-
-            </thead>
-
-            <tbody>
-
-              <tr>
-
-                <td
-                  colSpan={4}
-                  className="py-12 text-center text-zinc-500"
-                >
-                  No videos uploaded yet.
-                </td>
-
-              </tr>
-
-            </tbody>
-
-          </table>
-
-        </div>
-
-      </div>
-
-      {/* Quick Actions */}
-
-      <div className="grid gap-6 md:grid-cols-3">
-
-        <button className="rounded-2xl border border-zinc-800 bg-zinc-900 p-6 text-left transition hover:border-zinc-700">
-
-          <h3 className="text-lg font-semibold text-white">
-            Upload Video
-          </h3>
-
-          <p className="mt-2 text-sm text-zinc-500">
-            Publish a new video to your channel.
-          </p>
-
-        </button>
-
-        <button className="rounded-2xl border border-zinc-800 bg-zinc-900 p-6 text-left transition hover:border-zinc-700">
-
-          <h3 className="text-lg font-semibold text-white">
-            Manage Playlists
-          </h3>
-
-          <p className="mt-2 text-sm text-zinc-500">
-            Organize videos into playlists.
-          </p>
-
-        </button>
-
-        <button className="rounded-2xl border border-zinc-800 bg-zinc-900 p-6 text-left transition hover:border-zinc-700">
-
-          <h3 className="text-lg font-semibold text-white">
-            Edit Profile
-          </h3>
-
-          <p className="mt-2 text-sm text-zinc-500">
-            Update your channel information.
-          </p>
-
-        </button>
-
-      </div>
-
-    </section>
+    </div>
   );
-};
-
-export default Dashboard;
+}

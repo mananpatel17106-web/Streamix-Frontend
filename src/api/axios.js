@@ -1,63 +1,91 @@
 import axios from "axios";
 
 const api = axios.create({
-  baseURL:
-    import.meta.env.VITE_API_BASE_URL,
-
+  baseURL: import.meta.env.VITE_API_BASE_URL,
   withCredentials: true,
-
   headers: {
     "Content-Type": "application/json",
   },
 });
 
-// ===============================
-// REQUEST INTERCEPTOR
-// ===============================
+let isRefreshing = false;
+let failedQueue = [];
+
+const processQueue = (error = null) => {
+  failedQueue.forEach((promise) => {
+    if (error) {
+      promise.reject(error);
+    } else {
+      promise.resolve();
+    }
+  });
+
+  failedQueue = [];
+};
 
 api.interceptors.request.use(
   (config) => {
     return config;
   },
-
   (error) => Promise.reject(error)
 );
 
-// ===============================
-// RESPONSE INTERCEPTOR
-// ===============================
-
 api.interceptors.response.use(
-
   (response) => response,
 
   async (error) => {
-
     const originalRequest = error.config;
 
+    if (!error.response) {
+      return Promise.reject(error);
+    }
+
+    const status = error.response.status;
+
+    const isRefreshRequest =
+      originalRequest.url?.includes("/users/refresh-token");
+
+    const isLoginRequest =
+      originalRequest.url?.includes("/users/login");
+
     if (
-      error.response?.status === 401 &&
-      !originalRequest._retry
+      status === 401 &&
+      !originalRequest._retry &&
+      !isRefreshRequest &&
+      !isLoginRequest
     ) {
       originalRequest._retry = true;
 
-      try {
+      if (isRefreshing) {
+        return new Promise((resolve, reject) => {
+          failedQueue.push({
+            resolve,
+            reject,
+          });
+        }).then(() => api(originalRequest));
+      }
 
-        await api.post(
-          "/users/refresh-token"
-        );
-                // Refresh successful
-        // Retry the original request
+      isRefreshing = true;
+
+      try {
+        await api.post("/users/refresh-token");
+
+        processQueue();
 
         return api(originalRequest);
-
       } catch (refreshError) {
+        processQueue(refreshError);
 
-        // Refresh token expired or invalid
+        localStorage.clear();
+        sessionStorage.clear();
 
-        window.location.href = "/login";
+        if (window.location.pathname !== "/login") {
+          window.location.replace("/login");
+        }
 
         return Promise.reject(refreshError);
+      } finally {
+        isRefreshing = false;
       }
     }
 

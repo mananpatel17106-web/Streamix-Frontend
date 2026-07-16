@@ -1,54 +1,63 @@
+import { Routes, Route, Navigate } from "react-router-dom";
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { fetchCurrentUser } from "./features/auth/authSlice";
 
-import { Toaster } from "react-hot-toast";
+import Layout from "./components/Layout";
+import ProtectedRoute from "./components/ProtectedRoute";
 
-import AppRoutes from "./routes/AppRoutes";
+import Home from "./pages/Home";
+import Login from "./pages/Login";
+import Register from "./pages/Register";
+import Watch from "./pages/Watch";
+import Upload from "./pages/Upload";
+import EditVideo from "./pages/EditVideo";
+import Channel from "./pages/Channel";
+import Profile from "./pages/Profile";
+import LikedVideos from "./pages/LikedVideos";
+import History from "./pages/History";
+import Dashboard from "./pages/Dashboard";
+import Playlists from "./pages/Playlists";
+import PlaylistPage from "./pages/PlaylistPage";
+import Subscriptions from "./pages/Subscriptions";
+import Tweets from "./pages/Tweets";
+import NotFound from "./pages/NotFound";
 
-import Loader from "./components/ui/Loader";
-
-import { refreshUser } from "./store/slices/authSlice";
-
-function App() {
+export default function App() {
   const dispatch = useDispatch();
-
-  const { loading } = useSelector(
-    (state) => state.auth
-  );
+  const token = useSelector((s) => s.auth.accessToken);
 
   useEffect(() => {
-     dispatch(refreshUser());
-  }, [dispatch]);
-
-  if (loading) {
-    return (
-      <div className="flex h-screen items-center justify-center bg-[#09090B]">
-        <Loader />
-      </div>
-    );
-  }
+    if (token) dispatch(fetchCurrentUser());
+  }, [dispatch, token]);
 
   return (
-    <>
-      <AppRoutes />
+    <Routes>
+      <Route path="/login" element={<Login />} />
+      <Route path="/register" element={<Register />} />
 
-      <Toaster
-        position="top-right"
-        reverseOrder={false}
-        toastOptions={{
-          duration: 2500,
+      <Route element={<Layout />}>
+        <Route index element={<Home />} />
+        <Route path="/watch/:videoId" element={<Watch />} />
+        <Route path="/c/:username" element={<Channel />} />
+        <Route path="/tweets/:userId" element={<Tweets />} />
+        <Route path="/playlist/:playlistId" element={<PlaylistPage />} />
 
-          style: {
-            background: "#18181B",
+        <Route element={<ProtectedRoute />}>
+          <Route path="/upload" element={<Upload />} />
+          <Route path="/edit/:videoId" element={<EditVideo />} />
+          <Route path="/profile" element={<Profile />} />
+          <Route path="/liked" element={<LikedVideos />} />
+          <Route path="/history" element={<History />} />
+          <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/playlists" element={<Playlists />} />
+          <Route path="/subscriptions" element={<Subscriptions />} />
+        </Route>
 
-            color: "#fff",
+        <Route path="*" element={<NotFound />} />
+      </Route>
 
-            border: "1px solid #27272A",
-          },
-        }}
-      />
-          </>
+      <Route path="/404" element={<Navigate to="/" replace />} />
+    </Routes>
   );
 }
-
-export default App;

@@ -1,210 +1,95 @@
-import { useEffect, useState } from "react";
-import { Link, useLocation, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
+import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { useForm } from "react-hook-form";
-import { Eye, EyeOff, Loader2 } from "lucide-react";
+import { loginUser } from "../../../../cielo/lovable/src/features/auth/authSlice";
+import { Sparkles, Loader2 } from "lucide-react";
 import toast from "react-hot-toast";
 
-import {
-  loginUser,
-  clearAuthError,
-} from "../store/slices/authSlice";
-
-const Login = () => {
+export default function Login() {
+  const [identifier, setIdentifier] = useState("");
+  const [password, setPassword] = useState("");
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const location = useLocation();
+  const { status, error } = useSelector((s) => s.auth);
+  const loading = status === "loading";
 
-  const [showPassword, setShowPassword] = useState(false);
-
-  const {
-    loading,
-    error,
-    isAuthenticated,
-  } = useSelector((state) => state.auth);
-
-  const redirectTo =
-    location.state?.from?.pathname || "/";
-
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-  } = useForm({
-    defaultValues: {
-      emailOrUsername: "",
-      password: "",
-    },
-  });
-
-  useEffect(() => {
-    if (error) {
-      toast.error(error);
-      dispatch(clearAuthError());
-    }
-  }, [error, dispatch]);
-
-  useEffect(() => {
-    if (isAuthenticated) {
-      navigate(redirectTo, {
-        replace: true,
-      });
-    }
-  }, [
-    isAuthenticated,
-    navigate,
-    redirectTo,
-  ]);
-
-  const onSubmit = async (data) => {
-    const value = data.emailOrUsername.trim();
-
-    const payload = {
-      password: data.password,
-    };
-
-    if (value.includes("@")) {
-      payload.email = value;
-    } else {
-      payload.username = value;
-    }
-
-    const result = await dispatch(
-      loginUser(payload)
-    );
-
-    if (loginUser.fulfilled.match(result)) {
-      toast.success("Welcome Back 👋");
+  const submit = async (e) => {
+    e.preventDefault();
+    const res = await dispatch(loginUser({ identifier, password }));
+    if (res.meta.requestStatus === "fulfilled") {
+      toast.success("Welcome back!");
+      navigate(location.state?.from?.pathname || "/", { replace: true });
     }
   };
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-[#09090B] px-4">
-      <div className="w-full max-w-md rounded-3xl border border-zinc-800 bg-zinc-900/60 p-8 backdrop-blur-xl">
-
-        <div className="mb-8 text-center">
-
-          <h1 className="text-3xl font-bold text-white">
-            Welcome Back
+    <div className="relative min-h-screen overflow-hidden">
+      <div className="absolute inset-0 bg-gradient-hero" />
+      <div className="relative mx-auto grid min-h-screen max-w-6xl grid-cols-1 items-center gap-10 px-6 py-12 lg:grid-cols-2">
+        <div className="hidden lg:block">
+          <Link to="/" className="inline-flex items-center gap-2">
+            <div className="grid h-10 w-10 place-items-center rounded-xl bg-gradient-primary shadow-glow">
+              <Sparkles className="h-5 w-5 text-white" />
+            </div>
+            <span className="font-display text-xl font-bold">Streamix</span>
+          </Link>
+          <h1 className="mt-10 font-display text-5xl font-bold leading-[1.05] text-gradient">
+            Welcome back to the stream.
           </h1>
-
-          <p className="mt-2 text-sm text-zinc-500">
-            Login to continue using Streamix
+          <p className="mt-4 max-w-md text-muted">
+            Pick up where you left off — new drops from creators you follow.
           </p>
-
         </div>
-
-        <form
-          onSubmit={handleSubmit(onSubmit)}
-          className="space-y-5"
-        >
-
-          <div>
-
-            <input
-              type="text"
-              placeholder="Email or Username"
-              {...register("emailOrUsername", {
-                required:
-                  "Email or Username is required",
-              })}
-              className="h-12 w-full rounded-xl border border-zinc-800 bg-zinc-950 px-4 text-white outline-none focus:border-zinc-700"
-            />
-
-            {errors.emailOrUsername && (
-              <p className="mt-2 text-xs text-red-400">
-                {errors.emailOrUsername.message}
-              </p>
-            )}
-
-          </div>
-
-          <div className="relative">
-
-            <input
-              type={
-                showPassword
-                  ? "text"
-                  : "password"
-              }
-              placeholder="Password"
-              {...register("password", {
-                required: "Password is required",
-              })}
-              className="h-12 w-full rounded-xl border border-zinc-800 bg-zinc-950 px-4 pr-12 text-white outline-none focus:border-zinc-700"
-            />
-
-            <button
-              type="button"
-              onClick={() =>
-                setShowPassword(
-                  (prev) => !prev
-                )
-              }
-              className="absolute right-4 top-1/2 -translate-y-1/2 text-zinc-500 hover:text-white"
-            >
-              {showPassword ? (
-                <EyeOff size={18} />
-              ) : (
-                <Eye size={18} />
+        <div className="w-full">
+          <div className="mx-auto w-full max-w-md card p-8 shadow-elevated">
+            <h2 className="font-display text-2xl font-bold">Sign in</h2>
+            <p className="mt-1 text-sm text-muted">
+              Use your username or email.
+            </p>
+            <form onSubmit={submit} className="mt-6 space-y-4">
+              <label className="block">
+                <span className="label">Username or email</span>
+                <input
+                  required
+                  value={identifier}
+                  onChange={(e) => setIdentifier(e.target.value)}
+                  className="input"
+                  placeholder="you@example.com"
+                />
+              </label>
+              <label className="block">
+                <span className="label">Password</span>
+                <input
+                  required
+                  type="password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  className="input"
+                  placeholder="••••••••"
+                />
+              </label>
+              {error && (
+                <div className="rounded-lg border border-primary/40 bg-primary/10 px-3 py-2 text-xs text-primary-soft">
+                  {error}
+                </div>
               )}
-            </button>
-
-            {errors.password && (
-              <p className="mt-2 text-xs text-red-400">
-                {errors.password.message}
-              </p>
-            )}
-
+              <button disabled={loading} className="btn-primary w-full h-11">
+                {loading && <Loader2 className="w-4 h-4 animate-spin" />} Sign
+                in
+              </button>
+            </form>
+            <div className="mt-6 text-center text-sm text-muted">
+              New to Streamix?{" "}
+              <Link
+                to="/register"
+                className="font-semibold text-primary-soft hover:underline">
+                Create an account
+              </Link>
+            </div>
           </div>
-                    <button
-            type="submit"
-            disabled={loading}
-            className="flex h-12 w-full items-center justify-center rounded-xl bg-white font-semibold text-black transition hover:bg-zinc-200 disabled:cursor-not-allowed disabled:opacity-60"
-          >
-            {loading ? (
-              <Loader2
-                size={18}
-                className="animate-spin"
-              />
-            ) : (
-              "Login"
-            )}
-          </button>
-        </form>
-
-        <div className="mt-6 text-center">
-          <Link
-            to="/forgot-password"
-            className="text-sm text-zinc-400 transition hover:text-white"
-          >
-            Forgot Password?
-          </Link>
         </div>
-
-        <div className="my-8 flex items-center gap-4">
-          <div className="h-px flex-1 bg-zinc-800" />
-
-          <span className="text-xs uppercase tracking-widest text-zinc-500">
-            OR
-          </span>
-
-          <div className="h-px flex-1 bg-zinc-800" />
-        </div>
-
-        <p className="text-center text-sm text-zinc-500">
-          Don't have an account?{" "}
-          <Link
-            to="/signup"
-            className="font-semibold text-white transition hover:underline"
-          >
-            Create Account
-          </Link>
-        </p>
-
       </div>
     </div>
   );
-};
-
-export default Login;
+}
