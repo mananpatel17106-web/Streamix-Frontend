@@ -1,7 +1,4 @@
-import {
-  createAsyncThunk,
-  createSlice,
-} from "@reduxjs/toolkit";
+import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 
 import subscriptionService from "../../services/subscription.service";
 
@@ -22,10 +19,10 @@ export const toggleSubscription = createAsyncThunk(
       return await subscriptionService.toggleSubscription(channelId);
     } catch (error) {
       return thunkAPI.rejectWithValue(
-        error.response?.data?.message || error.message
+        error.response?.data?.message || error.message,
       );
     }
-  }
+  },
 );
 
 // Get Channel Profile
@@ -37,10 +34,10 @@ export const getChannelProfile = createAsyncThunk(
       return await subscriptionService.getChannelProfile(username);
     } catch (error) {
       return thunkAPI.rejectWithValue(
-        error.response?.data?.message || error.message
+        error.response?.data?.message || error.message,
       );
     }
-  }
+  },
 );
 
 // Get Subscribed Channels
@@ -49,15 +46,13 @@ export const getSubscribedChannels = createAsyncThunk(
   "subscription/getSubscribedChannels",
   async (subscriberId, thunkAPI) => {
     try {
-      return await subscriptionService.getSubscribedChannels(
-        subscriberId
-      );
+      return await subscriptionService.getSubscribedChannels(subscriberId);
     } catch (error) {
       return thunkAPI.rejectWithValue(
-        error.response?.data?.message || error.message
+        error.response?.data?.message || error.message,
       );
     }
-  }
+  },
 );
 
 // Get Channel Subscribers
@@ -66,15 +61,13 @@ export const getChannelSubscribers = createAsyncThunk(
   "subscription/getChannelSubscribers",
   async (channelId, thunkAPI) => {
     try {
-      return await subscriptionService.getChannelSubscribers(
-        channelId
-      );
+      return await subscriptionService.getChannelSubscribers(channelId);
     } catch (error) {
       return thunkAPI.rejectWithValue(
-        error.response?.data?.message || error.message
+        error.response?.data?.message || error.message,
       );
     }
-  }
+  },
 );
 
 const subscriptionSlice = createSlice({
@@ -102,8 +95,14 @@ const subscriptionSlice = createSlice({
         state.error = null;
       })
 
-      .addCase(toggleSubscription.fulfilled, (state) => {
+      .addCase(toggleSubscription.fulfilled, (state, action) => {
         state.loading = false;
+
+        if (state.channel) {
+          state.channel.isSubscribed = action.payload.data.subscribed;
+
+          state.channel.subscribersCount = action.payload.data.subscribersCount;
+        }
       })
 
       .addCase(toggleSubscription.rejected, (state, action) => {
@@ -137,8 +136,7 @@ const subscriptionSlice = createSlice({
 
       .addCase(getSubscribedChannels.fulfilled, (state, action) => {
         state.loading = false;
-        state.subscribedChannels =
-          action.payload?.data || [];
+        state.subscribedChannels = action.payload?.data || [];
       })
 
       .addCase(getSubscribedChannels.rejected, (state, action) => {
@@ -155,8 +153,7 @@ const subscriptionSlice = createSlice({
 
       .addCase(getChannelSubscribers.fulfilled, (state, action) => {
         state.loading = false;
-        state.channelSubscribers =
-          action.payload?.data || [];
+        state.channelSubscribers = action.payload?.data || [];
       })
 
       .addCase(getChannelSubscribers.rejected, (state, action) => {
@@ -166,9 +163,7 @@ const subscriptionSlice = createSlice({
   },
 });
 
-export const {
-  clearSubscriptionError,
-  clearChannel,
-} = subscriptionSlice.actions;
+export const { clearSubscriptionError, clearChannel } =
+  subscriptionSlice.actions;
 
 export default subscriptionSlice.reducer;

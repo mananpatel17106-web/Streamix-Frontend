@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import {
   Eye,
@@ -12,21 +12,27 @@ import toast from "react-hot-toast";
 
 import {
   toggleSubscription,
-  getChannelSubscribers,
+  getChannelProfile,
 } from "../../store/slices/subscriptionSlice";
 
 const VideoInfo = ({ video }) => {
   const dispatch = useDispatch();
 
-  const { loading, channelSubscribers } = useSelector(
-    (state) => state.subscription,
-  );
-
   const { user } = useSelector((state) => state.auth);
+
+  const { loading, channel } = useSelector((state) => state.subscription);
 
   const [expanded, setExpanded] = useState(false);
 
-  const [subscribed, setSubscribed] = useState(false);
+  useEffect(() => {
+    if (video?.owner?.username) {
+      dispatch(getChannelProfile(video.owner.username));
+    }
+  }, [dispatch, video]);
+
+  const subscribed = channel?.isSubscribed || false;
+
+  const subscriberCount = channel?.subscribersCount || 0;
 
   const formatViews = (views = 0) => {
     if (views >= 1000000000) return `${(views / 1000000000).toFixed(1)}B`;
@@ -48,19 +54,15 @@ const VideoInfo = ({ video }) => {
     });
   }, [video]);
 
-  const subscriberCount = channelSubscribers?.length || 0;
-
   const handleSubscription = async () => {
-    if (!video?.owner?._id) return;
+    if (!channel?._id) return;
 
-    const result = await dispatch(toggleSubscription(video.owner._id));
+    const result = await dispatch(toggleSubscription(channel._id));
 
     if (toggleSubscription.fulfilled.match(result)) {
-      setSubscribed((prev) => !prev);
+      dispatch(getChannelProfile(channel.username));
 
-      dispatch(getChannelSubscribers(video.owner._id));
-
-      toast.success(subscribed ? "Channel Unsubscribed" : "Channel Subscribed");
+      toast.success(result.payload.message);
     } else {
       toast.error(result.payload || "Subscription Failed");
     }
@@ -68,13 +70,9 @@ const VideoInfo = ({ video }) => {
 
   return (
     <section className="mt-6">
-      {/* Title */}
-
-      <h1 className="text-2xl font-bold leading-snug text-white lg:text-3xl">
+      <h1 className="text-3xl font-bold text-white leading-snug">
         {video?.title}
       </h1>
-
-      {/* Meta */}
 
       <div className="mt-5 flex flex-wrap items-center gap-5 text-sm text-zinc-400">
         <span className="flex items-center gap-2">
@@ -84,31 +82,27 @@ const VideoInfo = ({ video }) => {
 
         <span className="flex items-center gap-2">
           <CalendarDays size={16} />
-
           {publishedAt}
         </span>
       </div>
-      {/* Creator */}
 
-      <div className="mt-8 flex flex-col gap-5 rounded-2xl border border-zinc-800 bg-zinc-900/60 p-6 lg:flex-row lg:items-center lg:justify-between">
-        {/* Left */}
-
+      <div className="mt-8 flex flex-col gap-5 rounded-2xl border border-zinc-800 bg-zinc-900 p-6 lg:flex-row lg:items-center lg:justify-between">
         <div className="flex items-center gap-4">
           <img
-            src={video?.owner?.avatar}
-            alt={video?.owner?.username}
+            src={channel?.avatar || video?.owner?.avatar}
+            alt=""
             className="h-16 w-16 rounded-full border border-zinc-700 object-cover"
           />
 
           <div>
             <Link
-              to={`/profile/${video?.owner?.username}`}
-              className="text-xl font-semibold text-white transition hover:text-zinc-300">
-              {video?.owner?.fullName}
+              to={`/channel/${channel?.username || video?.owner?.username}`}
+              className="text-xl font-semibold text-white hover:text-zinc-300">
+              {channel?.fullName || video?.owner?.fullName}
             </Link>
 
             <p className="mt-1 text-sm text-zinc-400">
-              @{video?.owner?.username}
+              @{channel?.username || video?.owner?.username}
             </p>
 
             <p className="mt-2 text-sm text-zinc-500">
@@ -118,9 +112,7 @@ const VideoInfo = ({ video }) => {
           </div>
         </div>
 
-        {/* Right */}
-
-        {user?._id !== video?.owner?._id && (
+        {user?._id !== channel?._id && (
           <button
             disabled={loading}
             onClick={handleSubscription}
@@ -137,7 +129,7 @@ const VideoInfo = ({ video }) => {
             {loading ? (
               <>
                 <Loader2 size={18} className="mr-2 animate-spin" />
-                Please Wait
+                Please Wait...
               </>
             ) : subscribed ? (
               "Subscribed"
@@ -148,9 +140,7 @@ const VideoInfo = ({ video }) => {
         )}
       </div>
 
-      {/* Description */}
-
-      <div className="mt-8 rounded-2xl border border-zinc-800 bg-zinc-900/70 p-6">
+      <div className="mt-8 rounded-2xl border border-zinc-800 bg-zinc-900 p-6">
         <div
           className={`overflow-hidden transition-all duration-300
 
@@ -159,10 +149,11 @@ const VideoInfo = ({ video }) => {
             {video?.description || "No description available."}
           </p>
         </div>
+
         {video?.description?.length > 180 && (
           <button
             onClick={() => setExpanded((prev) => !prev)}
-            className="mt-5 flex items-center gap-2 text-sm font-medium text-white transition hover:text-zinc-300">
+            className="mt-5 flex items-center gap-2 text-sm font-medium text-white hover:text-zinc-300">
             {expanded ? (
               <>
                 Show Less
@@ -177,8 +168,6 @@ const VideoInfo = ({ video }) => {
           </button>
         )}
       </div>
-
-      {/* Extra Stats */}
 
       <div className="mt-6 grid gap-4 sm:grid-cols-3">
         <div className="rounded-xl border border-zinc-800 bg-zinc-900 p-5">
