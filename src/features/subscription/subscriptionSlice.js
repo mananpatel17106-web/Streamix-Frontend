@@ -42,6 +42,7 @@ const slice = createSlice({
   initialState: {
     channels: [],
     subscribers: [],
+    subscribedChannelIds: [],
     status: "idle",
     error: null,
   },
@@ -54,9 +55,13 @@ const slice = createSlice({
     b.addCase(fetchSubscribedChannels.fulfilled, (state, action) => {
       state.status = "idle";
 
-      state.channels = Array.isArray(action.payload)
+      const channels = Array.isArray(action.payload)
         ? action.payload
         : action.payload?.docs || [];
+
+      state.channels = channels;
+
+      state.subscribedChannelIds = channels.map((channel) => channel._id);
     });
 
     b.addCase(fetchSubscribedChannels.rejected, (state, action) => {
@@ -65,15 +70,15 @@ const slice = createSlice({
     });
     b.addCase(fetchChannelSubscribers.pending, (state) => {
       state.status = "loading";
-    });
+    })
 
-    b.addCase(fetchChannelSubscribers.fulfilled, (state, action) => {
-      state.status = "idle";
+      .addCase(fetchChannelSubscribers.fulfilled, (state, action) => {
+        state.status = "idle";
 
-      state.subscribers = Array.isArray(action.payload)
-        ? action.payload
-        : action.payload?.docs || [];
-    });
+        state.subscribers = Array.isArray(action.payload)
+          ? action.payload
+          : action.payload?.docs || [];
+      });
 
     b.addCase(fetchChannelSubscribers.rejected, (state, action) => {
       state.status = "idle";
@@ -82,9 +87,20 @@ const slice = createSlice({
     b.addCase(toggleSubscription.pending, (state) => {
       state.status = "loading";
     });
-
-    b.addCase(toggleSubscription.fulfilled, (state) => {
+    b.addCase(toggleSubscription.fulfilled, (state, action) => {
       state.status = "idle";
+
+      const channelId = action.meta.arg;
+
+      const exists = state.subscribedChannelIds.includes(channelId);
+
+      if (exists) {
+        state.subscribedChannelIds = state.subscribedChannelIds.filter(
+          (id) => id !== channelId,
+        );
+      } else {
+        state.subscribedChannelIds.push(channelId);
+      }
     });
 
     b.addCase(toggleSubscription.rejected, (state, action) => {

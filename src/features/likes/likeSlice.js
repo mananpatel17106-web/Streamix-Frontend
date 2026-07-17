@@ -11,7 +11,7 @@ export const toggleVideoLike = createAsyncThunk(
     } catch (error) {
       return rejectWithValue(apiErr(error));
     }
-  }
+  },
 );
 
 // Toggle Comment Like
@@ -24,7 +24,7 @@ export const toggleCommentLike = createAsyncThunk(
     } catch (error) {
       return rejectWithValue(apiErr(error));
     }
-  }
+  },
 );
 
 // Toggle Tweet Like
@@ -37,7 +37,7 @@ export const toggleTweetLike = createAsyncThunk(
     } catch (error) {
       return rejectWithValue(apiErr(error));
     }
-  }
+  },
 );
 
 // Get Liked Videos
@@ -50,11 +50,12 @@ export const fetchLikedVideos = createAsyncThunk(
     } catch (error) {
       return rejectWithValue(apiErr(error));
     }
-  }
+  },
 );
 
 const initialState = {
   liked: [],
+  likedVideoIds: [],
   status: "idle",
   error: null,
 };
@@ -67,23 +68,30 @@ const likeSlice = createSlice({
   extraReducers: (builder) => {
     builder
 
-      // =========================
-      // Toggle Video Like
-      // =========================
       .addCase(toggleVideoLike.pending, (state) => {
         state.status = "loading";
       })
-      .addCase(toggleVideoLike.fulfilled, (state) => {
+      .addCase(toggleVideoLike.fulfilled, (state, action) => {
         state.status = "idle";
+        state.lastLikeResponse = action.payload;
+
+        const videoId = action.meta.arg;
+
+        const exists = state.likedVideoIds.includes(videoId);
+
+        if (exists) {
+          state.likedVideoIds = state.likedVideoIds.filter(
+            (id) => id !== videoId,
+          );
+        } else {
+          state.likedVideoIds.push(videoId);
+        }
       })
       .addCase(toggleVideoLike.rejected, (state, action) => {
         state.status = "idle";
         state.error = action.payload;
       })
 
-      // =========================
-      // Toggle Comment Like
-      // =========================
       .addCase(toggleCommentLike.pending, (state) => {
         state.status = "loading";
       })
@@ -95,9 +103,6 @@ const likeSlice = createSlice({
         state.error = action.payload;
       })
 
-      // =========================
-      // Toggle Tweet Like
-      // =========================
       .addCase(toggleTweetLike.pending, (state) => {
         state.status = "loading";
       })
@@ -109,17 +114,22 @@ const likeSlice = createSlice({
         state.error = action.payload;
       })
 
-      // =========================
-      // Fetch Liked Videos
-      // =========================
       .addCase(fetchLikedVideos.pending, (state) => {
         state.status = "loading";
       })
       .addCase(fetchLikedVideos.fulfilled, (state, action) => {
         state.status = "idle";
-        state.liked = Array.isArray(action.payload)
+
+        const videos = Array.isArray(action.payload)
           ? action.payload
           : action.payload?.docs || [];
+
+        state.liked = videos;
+
+        state.likedVideoIds = videos
+          .filter((item) => item.video?._id)
+          .map((item) => item.video._id.toString());
+        console.log(action.payload);
       })
       .addCase(fetchLikedVideos.rejected, (state, action) => {
         state.status = "idle";

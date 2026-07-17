@@ -1,3 +1,18 @@
+import { useEffect, useMemo, useState } from "react";
+import { Link, useParams } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  ThumbsUp,
+  Share2,
+  Bell,
+  Trash2,
+  Send,
+  ChevronDown,
+  ChevronUp,
+  BookmarkPlus,
+} from "lucide-react";
+import toast from "react-hot-toast";
+
 import { fetchVideoById, fetchVideos } from "../features/video/videoSlice";
 
 import {
@@ -6,177 +21,429 @@ import {
   deleteComment,
 } from "../features/comment/commentSlice";
 
-import { toggleVideoLike } from "../features/likes/likeSlice";
+import { toggleVideoLike, fetchLikedVideos } from "../features/likes/likeSlice";
 
-import { toggleSubscription } from "../features/subscription/subscriptionSlice";
+import {
+  toggleSubscription,
+  fetchSubscribedChannels,
+} from "../features/subscription/subscriptionSlice";
+import Loader from "../components/Loader";
+import VideoCard from "../components/VideoCard";
+import PlaylistModal from "../components/playlist/PlaylistModal";
 
 import { formatViews, timeAgo } from "../utils/format";
 
-import Loader from "../components/Loader";
-import VideoCard from "../components/VideoCard";
-import { ThumbsUp, Share2, Bell, Trash2, Send } from "lucide-react";
-import toast from "react-hot-toast";
-
 export default function Watch() {
   const { videoId } = useParams();
+
   const dispatch = useDispatch();
-  const { current } = useSelector((s) => s.videos);
-  const { list: comments } = useSelector((s) => s.comments);
-  const { list: allVideos } = useSelector((s) => s.videos);
-  const user = useSelector((s) => s.auth.user);
+
+  const { current, list: allVideos } = useSelector((state) => state.videos);
+
+  const { list: comments } = useSelector((state) => state.comments);
+
+  const user = useSelector((state) => state.auth.user);
+
+  const likedVideoIds = useSelector((state) => state.likes.likedVideoIds);
+
+  const liked = likedVideoIds.includes(videoId);
+
   const [comment, setComment] = useState("");
+
+  const [commentCount, setCommentCount] = useState(0);
+
   const [subbed, setSubbed] = useState(false);
+
+  const [showFullDescription, setShowFullDescription] = useState(false);
+
+  const [playlistOpen, setPlaylistOpen] = useState(false);
+
+  const [subscriberCount, setSubscriberCount] = useState(0);
+
+  const subscribedChannelIds = useSelector(
+    (state) => state.subscriptions.subscribedChannelIds,
+  );
+
+  const subscribed = current?.owner?._id
+    ? subscribedChannelIds.includes(current.owner._id)
+    : false;
+
+  const isOwnChannel = user?._id === current?.owner?._id;
 
   useEffect(() => {
     dispatch(fetchVideoById(videoId));
     dispatch(fetchComments(videoId));
     dispatch(fetchVideos({}));
-  }, [dispatch, videoId]);
+
+    if (user) {
+      dispatch(fetchLikedVideos());
+      dispatch(fetchSubscribedChannels(user._id));
+    }
+  }, [dispatch, videoId, user]);
+
+  useEffect(() => {
+    if (!current?.owner) return;
+
+    setSubbed(current.owner.isSubscribed || current.owner.subscribed || false);
+  }, [current]);
+
+  useEffect(() => {
+    if (current?.owner?.subscribersCount !== undefined) {
+      setSubscriberCount(current.owner.subscribersCount);
+    }
+  }, [current]);
+
+  useEffect(() => {
+    if (current?.commentsCount !== undefined) {
+      setCommentCount(current.commentsCount);
+    }
+  }, [current]);
+
+  const recommendedVideos = useMemo(() => {
+    return (allVideos || [])
+      .filter((video) => video._id !== videoId)
+      .slice(0, 8);
+  }, [allVideos, videoId]);
 
   const like = async () => {
-    if (!user) return toast.error("Sign in to like");
-    await dispatch(toggleVideoLike(videoId));
-    toast.success("Updated");
+    if (!user) {
+      toast.error("Sign in first");
+      return;
+    }
+
+    const result = await dispatch(toggleVideoLike(videoId));
+
+    if (toggleVideoLike.fulfilled.match(result)) {
+      dispatch(fetchLikedVideos());
+      dispatch(fetchVideoById(videoId));
+    }
   };
 
   const sub = async () => {
-    if (!user) return toast.error("Sign in to subscribe");
+    if (!user) {
+      toast.error("Sign in first");
+      return;
+    }
+
     if (!current?.owner?._id) return;
-    await dispatch(toggleSubscription(current.owner._id));
-    setSubbed((v) => !v);
+
+    const result = await dispatch(toggleSubscription(current.owner._id));
+
+    if (toggleSubscription.fulfilled.match(result)) {
+      if (subscribed) {
+        setSubscriberCount((prev) => Math.max(0, prev - 1));
+      } else {
+        setSubscriberCount((prev) => prev + 1);
+      }
+    } else {
+      toast.error("Unable to subscribe");
+    }
   };
 
   const submitComment = async (e) => {
     e.preventDefault();
-    if (!comment.trim()) return;
-    if (!user) return toast.error("Sign in to comment");
-    const r = await dispatch(addComment({ videoId, content: comment.trim() }));
-    if (r.meta.requestStatus === "fulfilled") setComment("");
+
+    if (!comment.trim()) {
+      toast.error("Write something");
+      return;
+    }
+
+    if (!user) {
+      toast.error("Login first");
+      return;
+    }
+
+    const res = await dispatch(
+      addComment({
+        videoId,
+        content: comment.trim(),
+      }),
+    );
+
+    if (res.meta.requestStatus === "fulfilled") {
+      setComment("");
+      toast.success("Comment added");
+      setCommentCount((prev) => prev + 1);
+    }
+  };
+
+  const removeComment = async (id) => {
+    const res = await dispatch(deleteComment(id));
+
+    if (res.meta.requestStatus === "fulfilled") {
+      toast.success("Comment deleted");
+    }
+    setCommentCount((prev) => Math.max(0, prev - 1));
   };
 
   const share = async () => {
     try {
       await navigator.clipboard.writeText(window.location.href);
+
       toast.success("Link copied");
     } catch {
-      toast.error("Copy failed");
+      toast.error("Unable to copy");
     }
   };
 
-  if (!current) return <Loader />;
+  if (!current) {
+    return <Loader />;
+  }
 
   return (
-    <div className="grid grid-cols-1 xl:grid-cols-[minmax(0,1fr)_360px] gap-8">
-      <div>
-        <div className="rounded-2xl overflow-hidden border border-border bg-black aspect-video">
+    <div className="grid grid-cols-1 gap-8 xl:grid-cols-[minmax(0,1fr)_360px]">
+      {/* LEFT */}
+
+      <section>
+        <div className="sticky top-20 overflow-hidden rounded-2xl border border-white/10 bg-black shadow-2xl">
           <video
             src={current.videoFile}
             poster={current.thumbnail}
             controls
-            className="w-full h-full"
+            controlsList="nodownload"
+            className="aspect-video w-full"
           />
         </div>
-        <h1 className="mt-4 font-display text-2xl font-bold">
+
+        <h1 className="mt-5 text-2xl font-bold leading-snug text-white">
           {current.title}
         </h1>
-        <div className="mt-2 flex flex-wrap items-center justify-between gap-4">
+
+        <div className="mt-5 flex flex-col gap-5 xl:flex-row xl:items-center xl:justify-between">
           <Link
             to={`/c/${current.owner?.username}`}
-            className="flex items-center gap-3">
+            className="flex items-center gap-4">
             <img
               src={current.owner?.avatar}
               alt=""
-              className="w-11 h-11 rounded-full object-cover"
+              className="h-12 w-12 rounded-full border border-white/10 object-cover"
             />
+
             <div>
-              <div className="font-semibold text-sm">
+              <h2 className="flex items-center gap-2 text-base font-semibold text-white">
                 {current.owner?.fullName || current.owner?.username}
-              </div>
-              <div className="text-xs text-muted">
-                @{current.owner?.username}
+
+                {(current.owner?.verified || current.owner?.isVerified) && (
+                  <span className="rounded-full bg-sky-500/20 px-2 py-0.5 text-xs text-sky-400">
+                    Verified
+                  </span>
+                )}
+              </h2>
+
+              <div className="text-sm text-neutral-400">
+                <p>@{current.owner?.username}</p>
+
+                <p className="mt-1 text-xs">
+                  {subscriberCount.toLocaleString()} subscribers
+                </p>
               </div>
             </div>
           </Link>
-          <div className="flex items-center gap-2">
+
+          <div className="flex flex-wrap gap-3">
+            {isOwnChannel ? (
+              <Link
+                to={`/studio/videos/${current._id}`}
+                className="flex items-center gap-2 rounded-full bg-blue-600 px-5 py-2.5 font-medium text-white hover:bg-blue-700">
+                Edit Video
+              </Link>
+            ) : (
+              <button
+                onClick={sub}
+                className={`flex items-center gap-2 rounded-full px-5 py-2.5 font-medium transition ${
+                  subscribed
+                    ? "border border-white/10 bg-neutral-800 hover:bg-neutral-700"
+                    : "bg-red-600 hover:bg-red-700"
+                }`}>
+                <Bell size={18} />
+                {subscribed ? "Subscribed" : "Subscribe"}
+              </button>
+            )}
             <button
-              onClick={sub}
-              className={subbed ? "btn-ghost" : "btn-primary"}>
-              <Bell className="w-4 h-4" /> {subbed ? "Subscribed" : "Subscribe"}
+              onClick={like}
+              className={`flex items-center gap-2 rounded-full px-5 py-2.5 font-medium transition ${
+                liked
+                  ? "bg-red-600 text-white hover:bg-red-700"
+                  : "border border-white/10 bg-neutral-900 text-white hover:bg-neutral-800"
+              }`}>
+              <ThumbsUp size={18} fill={liked ? "currentColor" : "none"} />
+
+              <span>{liked ? "Liked" : "Like"}</span>
+
+              <span className="rounded-full bg-white/10 px-2 py-0.5 text-xs">
+                {current?.likesCount ?? 0}
+              </span>
             </button>
-            <button onClick={like} className="btn-ghost">
-              <ThumbsUp className="w-4 h-4" /> Like
+
+            <button
+              onClick={() => {
+                if (!user) {
+                  toast.error("Sign in to save videos");
+                  return;
+                }
+
+                setPlaylistOpen(true);
+              }}
+              className="flex items-center gap-2 rounded-full border border-white/10 bg-neutral-900 px-5 py-2.5 text-white transition hover:bg-neutral-800">
+              <BookmarkPlus size={18} />
+              Save
             </button>
-            <button onClick={share} className="btn-ghost">
-              <Share2 className="w-4 h-4" /> Share
+
+            <button
+              onClick={share}
+              className="flex items-center gap-2 rounded-full border border-white/10 bg-neutral-900 px-5 py-2.5 text-white transition hover:bg-neutral-800">
+              <Share2 size={18} />
+              Share
             </button>
           </div>
-        </div>
-        <div className="mt-4 card p-4 text-sm">
-          <div className="text-muted text-xs mb-2">
-            {formatViews(current.views)} views · {timeAgo(current.createdAt)}
-          </div>
-          <p className="whitespace-pre-wrap">{current.description}</p>
         </div>
 
+        <div className="mt-6 rounded-2xl border border-white/10 bg-neutral-900 p-5">
+          <div className="mb-3 flex flex-wrap items-center gap-3 text-sm text-neutral-400">
+            <span>
+              <strong>{formatViews(current.views)}</strong> views
+            </span>
+
+            <span>•</span>
+
+            <span>{timeAgo(current.createdAt)}</span>
+            <div className="mt-2 text-xs text-neutral-500">
+              Published on {new Date(current.createdAt).toLocaleDateString()}
+            </div>
+          </div>
+
+          <p
+            className={`whitespace-pre-wrap text-sm leading-7 text-neutral-300 ${
+              showFullDescription ? "" : "line-clamp-3"
+            }`}>
+            {current.description}
+          </p>
+
+          {current.description?.length > 180 && (
+            <button
+              onClick={() => setShowFullDescription(!showFullDescription)}
+              className="mt-4 flex items-center gap-2 text-sm font-semibold text-red-400 hover:text-red-300">
+              {showFullDescription ? (
+                <>
+                  Show Less
+                  <ChevronUp size={16} />
+                </>
+              ) : (
+                <>
+                  Show More
+                  <ChevronDown size={16} />
+                </>
+              )}
+            </button>
+          )}
+        </div>
+
+        {/* COMMENTS */}
+
         <section className="mt-8">
-          <h2 className="font-display font-bold text-lg mb-4">
-            {comments.length} Comments
+          <h2 className="text-lg font-semibold">
+            {commentCount.toLocaleString()} Comments
           </h2>
           {user && (
-            <form onSubmit={submitComment} className="flex gap-3 mb-6">
+            <form onSubmit={submitComment} className="mb-8 flex gap-3">
               <img
                 src={user.avatar}
-                className="w-9 h-9 rounded-full object-cover"
-                alt=""
+                alt={user.username}
+                className="h-10 w-10 rounded-full object-cover"
               />
+
               <input
                 value={comment}
                 onChange={(e) => setComment(e.target.value)}
-                placeholder="Add a comment…"
+                placeholder="Add a comment..."
                 className="input flex-1"
               />
-              <button className="btn-primary">
-                <Send className="w-4 h-4" />
+
+              <button type="submit" className="btn-primary">
+                <Send size={18} />
               </button>
             </form>
           )}
-          <ul className="space-y-4">
-            {comments.map((c) => (
-              <li key={c._id} className="flex gap-3">
-                <img
-                  src={c.owner?.avatar}
-                  alt=""
-                  className="w-9 h-9 rounded-full object-cover"
-                />
-                <div className="flex-1">
-                  <div className="text-xs text-muted">
-                    @{c.owner?.username} · {timeAgo(c.createdAt)}
+
+          {!comments.length ? (
+            <div className="rounded-2xl border border-dashed border-white/10 bg-neutral-900 py-14 text-center">
+              <h3 className="text-lg font-semibold">No comments yet</h3>
+
+              <p className="mt-2 text-sm text-neutral-500">
+                Be the first one to start the discussion.
+              </p>
+            </div>
+          ) : (
+            <div className="space-y-6">
+              {comments.map((c) => (
+                <div
+                  key={c._id}
+                  className="flex gap-4 rounded-xl border border-white/5 bg-neutral-900/50 p-4 transition hover:border-white/10">
+                  <img
+                    src={c.owner?.avatar}
+                    alt={c.owner?.username}
+                    className="h-10 w-10 rounded-full object-cover"
+                  />
+
+                  <div className="flex-1">
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <span className="font-medium text-white">
+                        {c.owner?.fullName || c.owner?.username}
+                      </span>
+
+                      <span className="text-xs text-neutral-500">
+                        @{c.owner?.username}
+                      </span>
+
+                      <span className="text-xs text-neutral-600">•</span>
+
+                      <span className="text-xs text-neutral-500">
+                        {timeAgo(c.createdAt)}
+                      </span>
+                    </div>
+
+                    <p className="mt-2 whitespace-pre-wrap text-sm leading-6 text-neutral-300">
+                      {c.content}
+                    </p>
                   </div>
-                  <div className="text-sm mt-0.5">{c.content}</div>
+
+                  {user?._id === c.owner?._id && (
+                    <button
+                      onClick={() => removeComment(c._id)}
+                      className="self-start rounded-lg p-2 text-neutral-500 transition hover:bg-red-500/10 hover:text-red-500">
+                      <Trash2 size={18} />
+                    </button>
+                  )}
                 </div>
-                {user?._id === c.owner?._id && (
-                  <button
-                    onClick={() => dispatch(deleteComment(c._id))}
-                    className="text-muted hover:text-primary-soft">
-                    <Trash2 className="w-4 h-4" />
-                  </button>
-                )}
-              </li>
-            ))}
-          </ul>
+              ))}
+            </div>
+          )}
         </section>
-      </div>
-      <aside className="space-y-4">
-        <h3 className="font-display font-bold">Up next</h3>
-        <div className="grid gap-4">
-          {(allVideos || [])
-            .filter((v) => v._id !== videoId)
-            .slice(0, 8)
-            .map((v) => (
-              <VideoCard key={v._id} video={v} />
-            ))}
+      </section>
+
+      {/* RIGHT SIDEBAR */}
+
+      <aside className="h-fit xl:sticky xl:top-20">
+        <div className="flex items-center justify-between">
+          <h3 className="text-xl font-bold">Up Next</h3>
+
+          <span className="text-sm text-neutral-500">
+            {recommendedVideos.length} videos
+          </span>
+        </div>
+
+        <div className="space-y-5">
+          {recommendedVideos.map((video) => (
+            <VideoCard key={video._id} video={video} />
+          ))}
         </div>
       </aside>
+
+      <PlaylistModal
+        open={playlistOpen}
+        onClose={() => setPlaylistOpen(false)}
+        videoId={current._id}
+      />
     </div>
   );
 }
