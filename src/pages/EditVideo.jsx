@@ -4,11 +4,10 @@ import { useDispatch, useSelector } from "react-redux";
 import {
   fetchVideoById,
   updateVideo,
-  deleteVideo,
-  togglePublish,
-} from "../../../../cielo/lovable/src/features/videos/videoSlice";
+} from "../features/video/videoSlice";
+
+import Loader from "../components/Loader";
 import toast from "react-hot-toast";
-import Loader from "../../../../cielo/lovable/src/components/Loader";
 
 export default function EditVideo() {
   const { videoId } = useParams();

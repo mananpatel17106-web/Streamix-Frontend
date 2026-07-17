@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { fetchSubscribedChannels } from "../../../../cielo/lovable/src/features/subscriptions/subscriptionSlice";
+import { fetchSubscribedChannels } from "../features/subscription/subscriptionSlice";
 import { Link } from "react-router-dom";
 
 export default function Subscriptions() {

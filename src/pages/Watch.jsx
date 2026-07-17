@@ -1,24 +1,20 @@
-import { useEffect, useState } from "react";
-import { useParams, Link } from "react-router-dom";
-import { useDispatch, useSelector } from "react-redux";
-import {
-  fetchVideoById,
-  fetchVideos,
-} from "../../../../cielo/lovable/src/features/videos/videoSlice";
+import { fetchVideoById, fetchVideos } from "../features/video/videoSlice";
+
 import {
   fetchComments,
   addComment,
   deleteComment,
-} from "../../../../cielo/lovable/src/features/comments/commentSlice";
-import { toggleVideoLike } from "../../../../cielo/lovable/src/features/likes/likeSlice";
-import { toggleSubscription } from "../../../../cielo/lovable/src/features/subscriptions/subscriptionSlice";
-import {
-  formatViews,
-  timeAgo,
-} from "../../../../cielo/lovable/src/utils/format";
+} from "../features/comment/commentSlice";
+
+import { toggleVideoLike } from "../features/likes/likeSlice";
+
+import { toggleSubscription } from "../features/subscription/subscriptionSlice";
+
+import { formatViews, timeAgo } from "../utils/format";
+
+import Loader from "../components/Loader";
+import VideoCard from "../components/VideoCard";
 import { ThumbsUp, Share2, Bell, Trash2, Send } from "lucide-react";
-import Loader from "../../../../cielo/lovable/src/components/Loader";
-import VideoCard from "../../../../cielo/lovable/src/components/VideoCard";
 import toast from "react-hot-toast";
 
 export default function Watch() {

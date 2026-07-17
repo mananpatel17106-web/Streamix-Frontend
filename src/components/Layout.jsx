@@ -1,19 +1,48 @@
-import { Outlet } from "react-router-dom";
+import { Outlet, useLocation } from "react-router-dom";
+import { useEffect, useState } from "react";
+
 import Navbar from "./Navbar";
 import Sidebar from "./Sidebar";
-import { useState } from "react";
 
 export default function Layout() {
-  const [openMobile, setOpenMobile] = useState(false);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const location = useLocation();
+
+  useEffect(() => {
+    setSidebarOpen(false);
+  }, [location.pathname]);
+
+  useEffect(() => {
+    document.body.style.overflow = sidebarOpen ? "hidden" : "auto";
+
+    return () => {
+      document.body.style.overflow = "auto";
+    };
+  }, [sidebarOpen]);
+
   return (
-    <div className="min-h-screen bg-bg">
-      <Navbar onMenu={() => setOpenMobile((v) => !v)} />
-      <div className="flex">
-        <Sidebar open={openMobile} onClose={() => setOpenMobile(false)} />
-        <main className="flex-1 min-w-0 px-4 md:px-8 py-6 md:pl-72">
+    <div className="min-h-screen bg-neutral-950 text-white">
+      <Navbar
+        onMenu={() => setSidebarOpen((prev) => !prev)}
+      />
+
+      <Sidebar
+        open={sidebarOpen}
+        onClose={() => setSidebarOpen(false)}
+      />
+
+      <main
+        className="
+          min-h-screen
+          pt-16
+          lg:pl-64
+          transition-all
+          duration-300
+        ">
+        <div className="mx-auto max-w-[1800px] p-4 md:p-6 lg:p-8">
           <Outlet />
-        </main>
-      </div>
+        </div>
+      </main>
     </div>
   );
 }

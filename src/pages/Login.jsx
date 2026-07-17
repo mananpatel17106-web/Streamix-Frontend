@@ -1,7 +1,7 @@
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { loginUser } from "../../../../cielo/lovable/src/features/auth/authSlice";
+import { loginUser } from "../features/auth/authSlice";
 import { Sparkles, Loader2 } from "lucide-react";
 import toast from "react-hot-toast";
 

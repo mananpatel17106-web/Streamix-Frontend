@@ -1,62 +1,179 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { api, apiErr } from "../../services/api";
 
+// ==================== GET COMMENTS ====================
+
 export const fetchComments = createAsyncThunk(
   "comments/list",
   async (videoId, { rejectWithValue }) => {
     try {
       const { data } = await api.get(`/comments/${videoId}`);
       return data.data;
-    } catch (e) { return rejectWithValue(apiErr(e)); }
+    } catch (error) {
+      return rejectWithValue(apiErr(error));
+    }
   }
 );
+
+// ==================== ADD COMMENT ====================
 
 export const addComment = createAsyncThunk(
   "comments/add",
   async ({ videoId, content }, { rejectWithValue }) => {
     try {
-      const { data } = await api.post(`/comments/${videoId}`, { content });
+      const { data } = await api.post(`/comments/${videoId}`, {
+        content,
+      });
+
       return data.data;
-    } catch (e) { return rejectWithValue(apiErr(e)); }
+    } catch (error) {
+      return rejectWithValue(apiErr(error));
+    }
   }
 );
 
-export const deleteComment = createAsyncThunk(
-  "comments/delete",
-  async (commentId, { rejectWithValue }) => {
-    try { await api.delete(`/comments/c/${commentId}`); return commentId; }
-    catch (e) { return rejectWithValue(apiErr(e)); }
-  }
-);
+// ==================== UPDATE COMMENT ====================
 
 export const updateComment = createAsyncThunk(
   "comments/update",
   async ({ commentId, content }, { rejectWithValue }) => {
     try {
-      const { data } = await api.patch(`/comments/c/${commentId}`, { content });
+      const { data } = await api.patch(`/comments/c/${commentId}`, {
+        content,
+      });
+
       return data.data;
-    } catch (e) { return rejectWithValue(apiErr(e)); }
+    } catch (error) {
+      return rejectWithValue(apiErr(error));
+    }
   }
 );
 
-const slice = createSlice({
+// ==================== DELETE COMMENT ====================
+
+export const deleteComment = createAsyncThunk(
+  "comments/delete",
+  async (commentId, { rejectWithValue }) => {
+    try {
+      await api.delete(`/comments/c/${commentId}`);
+
+      return commentId;
+    } catch (error) {
+      return rejectWithValue(apiErr(error));
+    }
+  }
+);
+
+// ==================== SLICE ====================
+
+const initialState = {
+  list: [],
+  total: 0,
+  status: "idle",
+  error: null,
+};
+
+const commentSlice = createSlice({
   name: "comments",
-  initialState: { list: [], status: "idle" },
+  initialState,
   reducers: {},
-  extraReducers: (b) => {
-    b.addCase(fetchComments.pending, (s) => { s.status = "loading"; });
-    b.addCase(fetchComments.fulfilled, (s, a) => {
-      s.status = "idle";
-      s.list = Array.isArray(a.payload) ? a.payload : a.payload?.docs || [];
-    });
-    b.addCase(addComment.fulfilled, (s, a) => { s.list.unshift(a.payload); });
-    b.addCase(deleteComment.fulfilled, (s, a) => {
-      s.list = s.list.filter((c) => c._id !== a.payload);
-    });
-    b.addCase(updateComment.fulfilled, (s, a) => {
-      const i = s.list.findIndex((c) => c._id === a.payload._id);
-      if (i > -1) s.list[i] = a.payload;
-    });
+
+  extraReducers: (builder) => {
+    builder
+
+      // ==================== FETCH ====================
+
+      .addCase(fetchComments.pending, (state) => {
+        state.status = "loading";
+        state.error = null;
+      })
+
+      .addCase(fetchComments.fulfilled, (state, action) => {
+        state.status = "idle";
+
+        if (Array.isArray(action.payload)) {
+          state.list = action.payload;
+          state.total = action.payload.length;
+        } else {
+          state.list = action.payload?.docs || [];
+          state.total =
+            action.payload?.totalDocs ||
+            action.payload?.total ||
+            state.list.length;
+        }
+      })
+
+      .addCase(fetchComments.rejected, (state, action) => {
+        state.status = "idle";
+        state.error = action.payload;
+      })
+
+      // ==================== ADD ====================
+
+      .addCase(addComment.pending, (state) => {
+        state.status = "loading";
+        state.error = null;
+      })
+
+      .addCase(addComment.fulfilled, (state, action) => {
+        state.status = "idle";
+        state.list.unshift(action.payload);
+        state.total += 1;
+      })
+
+      .addCase(addComment.rejected, (state, action) => {
+        state.status = "idle";
+        state.error = action.payload;
+      })
+
+      // ==================== UPDATE ====================
+
+      .addCase(updateComment.pending, (state) => {
+        state.status = "loading";
+        state.error = null;
+      })
+
+      .addCase(updateComment.fulfilled, (state, action) => {
+        state.status = "idle";
+
+        const index = state.list.findIndex(
+          (comment) => comment._id === action.payload._id
+        );
+
+        if (index !== -1) {
+          state.list[index] = action.payload;
+        }
+      })
+
+      .addCase(updateComment.rejected, (state, action) => {
+        state.status = "idle";
+        state.error = action.payload;
+      })
+
+      // ==================== DELETE ====================
+
+      .addCase(deleteComment.pending, (state) => {
+        state.status = "loading";
+        state.error = null;
+      })
+
+      .addCase(deleteComment.fulfilled, (state, action) => {
+        state.status = "idle";
+
+        state.list = state.list.filter(
+          (comment) => comment._id !== action.payload
+        );
+
+        if (state.total > 0) {
+          state.total -= 1;
+        }
+      })
+
+      .addCase(deleteComment.rejected, (state, action) => {
+        state.status = "idle";
+        state.error = action.payload;
+      });
   },
 });
-export default slice.reducer;
+
+export default commentSlice.reducer;

@@ -1,11 +1,11 @@
 import { useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { fetchChannelProfile } from "../../../../cielo/lovable/src/features/auth/authSlice";
-import { toggleSubscription } from "../../../../cielo/lovable/src/features/subscriptions/subscriptionSlice";
+import { fetchChannelProfile } from "../features/auth/authSlice";
+import { toggleSubscription } from "../features/subscription/subscriptionSlice";
 import { Bell } from "lucide-react";
 import toast from "react-hot-toast";
-import { formatViews } from "../../../../cielo/lovable/src/utils/format";
+import { formatViews } from "../utils/format";
 
 export default function Channel() {
   const { username } = useParams();

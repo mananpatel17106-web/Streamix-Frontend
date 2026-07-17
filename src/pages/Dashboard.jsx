@@ -3,11 +3,9 @@ import { useDispatch, useSelector } from "react-redux";
 import {
   fetchChannelStats,
   fetchChannelVideos,
-} from "../../../../cielo/lovable/src/features/dashboard/dashboardSlice";
-import {
-  formatViews,
-  timeAgo,
-} from "../../../../cielo/lovable/src/utils/format";
+} from "../features/dashboard/dashboardSlice";
+
+import { formatViews,timeAgo } from "../utils/format";
 import { Link } from "react-router-dom";
 
 function Stat({ label, value }) {

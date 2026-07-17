@@ -1,10 +1,10 @@
 import { configureStore } from "@reduxjs/toolkit";
 import authReducer from "../features/auth/authSlice";
-import videoReducer from "../features/videos/videoSlice";
-import commentReducer from "../features/comments/commentSlice";
+import videoReducer from "../features/video/videoSlice";
+import commentReducer from "../features/comment/commentSlice";
 import likeReducer from "../features/likes/likeSlice";
-import playlistReducer from "../features/playlists/playlistSlice";
-import subscriptionReducer from "../features/subscriptions/subscriptionSlice";
+import playlistReducer from "../features/playlist/playlistSlice";
+import subscriptionReducer from "../features/subscription/subscriptionSlice";
 import tweetReducer from "../features/tweets/tweetSlice";
 import dashboardReducer from "../features/dashboard/dashboardSlice";
 

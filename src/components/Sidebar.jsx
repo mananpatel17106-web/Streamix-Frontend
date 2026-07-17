@@ -1,41 +1,154 @@
 import { NavLink } from "react-router-dom";
-import {
-  Home, Flame, Users, ListVideo, Heart, History, LayoutDashboard, MessageSquare, X,
-} from "lucide-react";
 import { useSelector } from "react-redux";
+import {
+  Home,
+  Flame,
+  Users,
+  Heart,
+  History,
+  ListVideo,
+  LayoutDashboard,
+  MessageSquare,
+  Upload,
+  X,
+} from "lucide-react";
 
-const link = ({ isActive }) =>
-  `flex items-center gap-3 px-4 h-11 rounded-xl text-sm font-medium transition-colors ${
-    isActive ? "bg-card text-white" : "text-muted hover:bg-card hover:text-text"
+const navItem = ({ isActive }) =>
+  `flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 ${
+    isActive
+      ? "bg-rose-600 text-white shadow-lg"
+      : "text-neutral-400 hover:bg-neutral-900 hover:text-white"
   }`;
 
 export default function Sidebar({ open, onClose }) {
-  const user = useSelector((s) => s.auth.user);
+  const { user } = useSelector((state) => state.auth);
+
   return (
     <>
-      <aside className={`fixed z-40 md:z-10 top-16 left-0 w-64 bg-surface md:bg-transparent border-r border-border md:border-r-0 h-[calc(100vh-4rem)] p-4 overflow-y-auto scrollbar-thin transition-transform ${open ? "translate-x-0" : "-translate-x-full"} md:translate-x-0`}>
-        <button className="md:hidden mb-3 p-2 rounded-lg hover:bg-card" onClick={onClose}><X className="w-4 h-4"/></button>
-        <nav className="space-y-1">
-          <NavLink end to="/" className={link}><Home className="w-4 h-4" /> Home</NavLink>
-          <NavLink to="/?filter=trending" className={link}><Flame className="w-4 h-4" /> Trending</NavLink>
+      <aside
+        className={`
+          fixed
+          top-16
+          left-0
+          z-40
+          h-[calc(100vh-4rem)]
+          w-64
+          overflow-y-auto
+          border-r
+          border-neutral-800
+          bg-neutral-950
+          transition-transform
+          duration-300
+          ${open ? "translate-x-0" : "-translate-x-full"}
+          lg:translate-x-0
+        `}
+      >
+        {/* Mobile Header */}
+        <div className="flex items-center justify-between p-4 lg:hidden">
+          <h2 className="text-lg font-bold text-white">Menu</h2>
+
+          <button
+            onClick={onClose}
+            className="rounded-lg p-2 hover:bg-neutral-900"
+          >
+            <X size={18} />
+          </button>
+        </div>
+
+        {/* Navigation */}
+        <nav className="space-y-1 px-3">
+          <NavLink end to="/" className={navItem}>
+            <Home size={18} />
+            <span>Home</span>
+          </NavLink>
+
+          <NavLink to="/?filter=trending" className={navItem}>
+            <Flame size={18} />
+            <span>Trending</span>
+          </NavLink>
+
           {user && (
             <>
-              <div className="mt-6 px-4 text-[10px] font-bold uppercase tracking-widest text-muted">You</div>
-              <NavLink to="/subscriptions" className={link}><Users className="w-4 h-4" /> Subscriptions</NavLink>
-              <NavLink to="/history" className={link}><History className="w-4 h-4" /> History</NavLink>
-              <NavLink to="/liked" className={link}><Heart className="w-4 h-4" /> Liked Videos</NavLink>
-              <NavLink to="/playlists" className={link}><ListVideo className="w-4 h-4" /> Playlists</NavLink>
-              <NavLink to={`/tweets/${user._id}`} className={link}><MessageSquare className="w-4 h-4" /> My Tweets</NavLink>
-              <NavLink to="/dashboard" className={link}><LayoutDashboard className="w-4 h-4" /> Studio</NavLink>
+              <div className="mt-6 mb-2 px-4 text-xs font-semibold uppercase tracking-widest text-neutral-500">
+                Library
+              </div>
+
+              <NavLink to="/subscriptions" className={navItem}>
+                <Users size={18} />
+                <span>Subscriptions</span>
+              </NavLink>
+
+              <NavLink to="/history" className={navItem}>
+                <History size={18} />
+                <span>History</span>
+              </NavLink>
+
+              <NavLink to="/liked" className={navItem}>
+                <Heart size={18} />
+                <span>Liked Videos</span>
+              </NavLink>
+
+              <NavLink to="/playlists" className={navItem}>
+                <ListVideo size={18} />
+                <span>Playlists</span>
+              </NavLink>
+
+              <NavLink to={`/tweets/${user?._id}`} className={navItem}>
+                <MessageSquare size={18} />
+                <span>Tweets</span>
+              </NavLink>
+
+              <NavLink to="/dashboard" className={navItem}>
+                <LayoutDashboard size={18} />
+                <span>Dashboard</span>
+              </NavLink>
+
+              <NavLink to="/upload" className={navItem}>
+                <Upload size={18} />
+                <span>Upload</span>
+              </NavLink>
             </>
           )}
         </nav>
-        <div className="mt-8 p-4 rounded-2xl border border-border bg-card/60">
-          <div className="font-display text-sm font-semibold">Streamix Studio</div>
-          <p className="mt-1 text-xs text-muted">Upload, analyze, and grow your channel with real-time insights.</p>
+
+        {/* Creator Studio Card */}
+        <div className="mx-3 mt-8 rounded-2xl border border-neutral-800 bg-neutral-900 p-5">
+          <h3 className="text-lg font-semibold text-white">
+            🚀 Creator Studio
+          </h3>
+
+          <p className="mt-2 text-sm leading-6 text-neutral-400">
+            Upload videos, manage playlists, check analytics and grow your
+            audience with Streamix Studio.
+          </p>
+
+          <NavLink
+            to="/dashboard"
+            className="mt-5 flex items-center justify-center rounded-xl bg-rose-600 py-3 font-semibold text-white transition hover:bg-rose-500"
+          >
+            Open Studio
+          </NavLink>
+        </div>
+
+        {/* Footer */}
+        <div className="mx-4 mt-10 border-t border-neutral-800 pt-5 pb-8">
+          <p className="text-xs leading-6 text-neutral-500">
+            Streamix © 2026
+          </p>
+
+          <p className="mt-2 text-xs text-neutral-600">
+            Built with React, Redux Toolkit & Tailwind CSS.
+          </p>
         </div>
       </aside>
-      {open && <div className="fixed inset-0 z-30 bg-black/60 md:hidden" onClick={onClose} />}
+
+      {/* Overlay */}
+      {open && (
+        <div
+          onClick={onClose}
+          className="fixed inset-0 z-30 bg-black/60 backdrop-blur-sm lg:hidden"
+        />
+      )}
     </>
   );
 }

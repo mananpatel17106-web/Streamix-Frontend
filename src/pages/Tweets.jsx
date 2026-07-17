@@ -4,12 +4,14 @@ import { useDispatch, useSelector } from "react-redux";
 import {
   fetchUserTweets,
   createTweet,
-  deleteTweet,
   updateTweet,
-} from "../../../../cielo/lovable/src/features/tweets/tweetSlice";
-import { toggleTweetLike } from "../../../../cielo/lovable/src/features/likes/likeSlice";
+  deleteTweet,
+} from "../features/tweets/tweetSlice";
+
+import { toggleTweetLike } from "../features/likes/likeSlice";
+
+import { timeAgo } from "../utils/format";
 import { Trash2, Heart, Send } from "lucide-react";
-import { timeAgo } from "../../../../cielo/lovable/src/utils/format";
 import toast from "react-hot-toast";
 
 export default function Tweets() {

@@ -2,33 +2,148 @@
 @tailwind components;
 @tailwind utilities;
 
-html, body, #root { height: 100%; }
+html,
+body,
+#root {
+  height: 100%;
+}
+
 body {
   font-family: "Inter", system-ui, sans-serif;
-  background: #0a0a0f;
+  background-color: #0a0a0f;
   color: #e8e8f0;
   -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
-.font-display { font-family: "Space Grotesk", system-ui, sans-serif; }
+
+.font-display {
+  font-family: "Space Grotesk", system-ui, sans-serif;
+}
+
+* {
+  scroll-behavior: smooth;
+}
 
 .text-gradient {
-  background: linear-gradient(135deg,#f43f5e 0%,#eab308 100%);
+  background: linear-gradient(135deg, #f43f5e 0%, #eab308 100%);
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
 }
 
-.scrollbar-thin::-webkit-scrollbar { width: 8px; height: 8px; }
-.scrollbar-thin::-webkit-scrollbar-thumb { background: #232334; border-radius: 4px; }
-.scrollbar-thin::-webkit-scrollbar-track { background: transparent; }
+.scrollbar-thin::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
 
-.btn { @apply inline-flex items-center justify-center gap-2 rounded-xl px-4 h-10 text-sm font-semibold transition-all disabled:opacity-60 disabled:cursor-not-allowed; }
-.btn-primary { @apply btn bg-gradient-primary text-white shadow-glow hover:brightness-110; }
-.btn-ghost { @apply btn bg-card hover:bg-border text-text border border-border; }
-.btn-outline { @apply btn border border-border hover:border-primary/60 hover:text-primary; }
+.scrollbar-thin::-webkit-scrollbar-thumb {
+  background: #2b2b39;
+  border-radius: 999px;
+}
+
+.scrollbar-thin::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.btn {
+  @apply inline-flex items-center justify-center gap-2 rounded-xl px-4 py-2 text-sm font-semibold transition-all duration-200 disabled:opacity-60 disabled:cursor-not-allowed;
+}
+
+.btn-primary {
+  @apply inline-flex items-center justify-center gap-2 rounded-xl px-4 py-2 text-sm font-semibold text-white transition-all duration-200;
+  background: linear-gradient(135deg, #e11d48 0%, #f43f5e 60%, #eab308 100%);
+  box-shadow: 0 10px 30px rgba(225, 29, 72, 0.35);
+}
+
+.btn-primary:hover {
+  filter: brightness(1.08);
+}
+
+.btn-ghost {
+  @apply inline-flex items-center justify-center gap-2 rounded-xl px-4 py-2 text-sm font-semibold border transition-all duration-200;
+  background: #161622;
+  border-color: #2b2b39;
+  color: #e8e8f0;
+}
+
+.btn-ghost:hover {
+  background: #20202c;
+}
+
+.btn-outline {
+  @apply inline-flex items-center justify-center gap-2 rounded-xl px-4 py-2 text-sm font-semibold border border-gray-700 text-white transition-all duration-200;
+}
+
+.btn-outline:hover {
+  border-color: #e11d48;
+  color: #e11d48;
+}
 
 .input {
-  @apply h-11 w-full rounded-xl border border-border bg-surface/60 px-4 text-sm outline-none transition-colors focus:border-primary/60 focus:bg-surface;
+  @apply w-full rounded-xl px-4 py-3 text-sm border outline-none transition-all duration-200;
+  background: #161622;
+  border-color: #2b2b39;
+  color: #ffffff;
 }
-.label { @apply mb-1.5 block text-xs font-semibold uppercase tracking-widest text-muted; }
-.card { @apply rounded-2xl border border-border bg-card/70 backdrop-blur-xl; }
+
+.input:focus {
+  border-color: #e11d48;
+  box-shadow: 0 0 0 3px rgba(225, 29, 72, 0.15);
+}
+
+.label {
+  @apply mb-2 block text-xs uppercase tracking-widest font-semibold;
+  color: #9ca3af;
+}
+
+.card {
+  background: rgba(22, 22, 34, 0.82);
+  border: 1px solid #2b2b39;
+  border-radius: 1rem;
+  backdrop-filter: blur(14px);
+}
+
+.surface {
+  background: #111118;
+}
+
+.card-bg {
+  background: #161622;
+}
+
+.border-custom {
+  border-color: #2b2b39;
+}
+
+.text-muted {
+  color: #9ca3af;
+}
+
+.shadow-glow {
+  box-shadow: 0 10px 30px rgba(225, 29, 72, 0.35);
+}
+
+.gradient-primary {
+  background: linear-gradient(135deg, #e11d48 0%, #f43f5e 60%, #eab308 100%);
+}
+
+.gradient-hero {
+  background:
+    radial-gradient(circle at top, rgba(225, 29, 72, 0.2), transparent 40%),
+    radial-gradient(circle at bottom right, rgba(234, 179, 8, 0.12), transparent 45%),
+    #0a0a0f;
+}
+
+::selection {
+  background: #e11d48;
+  color: white;
+}
+
+img {
+  display: block;
+  max-width: 100%;
+}
+
+a {
+  text-decoration: none;
+}

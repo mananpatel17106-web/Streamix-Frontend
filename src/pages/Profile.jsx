@@ -1,11 +1,11 @@
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
+  fetchCurrentUser,
   updateAccount,
   updateAvatar,
-  updateCover,
-  changePassword,
-} from "../../../../cielo/lovable/src/features/auth/authSlice";
+  updateCoverImage,
+} from "../features/auth/authSlice";
 import toast from "react-hot-toast";
 
 export default function Profile() {

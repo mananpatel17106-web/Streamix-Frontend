@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { publishVideo } from "../../../../cielo/lovable/src/features/videos/videoSlice";
+import { publishVideo } from "../features/video/videoSlice";
 import { Loader2, UploadCloud } from "lucide-react";
 import toast from "react-hot-toast";
 

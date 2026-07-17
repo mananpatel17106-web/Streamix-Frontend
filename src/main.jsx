@@ -5,7 +5,7 @@ import { Provider } from "react-redux";
 import { Toaster } from "react-hot-toast";
 
 import App from "./App";
-import { store } from "./store/store";
+import { store } from "./app/store";
 
 import "./index.css";
 

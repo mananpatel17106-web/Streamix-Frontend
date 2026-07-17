@@ -4,7 +4,7 @@ import {
   fetchUserPlaylists,
   createPlaylist,
   deletePlaylist,
-} from "../../../../cielo/lovable/src/features/playlists/playlistSlice";
+} from "../features/playlist/playlistSlice";
 import { Link } from "react-router-dom";
 import { Trash2, Plus } from "lucide-react";
 import toast from "react-hot-toast";

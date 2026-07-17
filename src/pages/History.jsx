@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { fetchWatchHistory } from "../../../../cielo/lovable/src/features/auth/authSlice";
-import VideoCard from "../../../../cielo/lovable/src/components/VideoCard";
+import { fetchWatchHistory } from "../features/auth/authSlice";
+import VideoCard from "../components/VideoCard";
 
 export default function History() {
   const dispatch = useDispatch();

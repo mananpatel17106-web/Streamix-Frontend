@@ -73,7 +73,7 @@ export const updateAvatar = createAsyncThunk(
   }
 );
 
-export const updateCover = createAsyncThunk(
+export const updateCoverImage = createAsyncThunk(
   "auth/updateCover",
   async (file, { rejectWithValue }) => {
     try {
@@ -133,7 +133,7 @@ const authSlice = createSlice({
 
     b.addCase(updateAccount.fulfilled, (s, a) => { s.user = a.payload; });
     b.addCase(updateAvatar.fulfilled, (s, a) => { s.user = a.payload; });
-    b.addCase(updateCover.fulfilled, (s, a) => { s.user = a.payload; });
+    b.addCase(updateCoverImage.fulfilled, (s, a) => { s.user = a.payload; });
 
     b.addCase(fetchChannelProfile.fulfilled, (s, a) => { s.channel = a.payload; });
     b.addCase(fetchWatchHistory.fulfilled, (s, a) => { s.history = a.payload || []; });

@@ -1,12 +1,10 @@
-import { useEffect } from "react";
-import { useParams } from "react-router-dom";
-import { useDispatch, useSelector } from "react-redux";
 import {
   fetchPlaylistById,
   removeVideoFromPlaylist,
-} from "../../../../cielo/lovable/src/features/playlists/playlistSlice";
-import VideoCard from "../../../../cielo/lovable/src/components/VideoCard";
-import Loader from "../../../../cielo/lovable/src/components/Loader";
+} from "../features/playlist/playlistSlice";
+
+import VideoCard from "../components/VideoCard";
+import Loader from "../components/Loader";
 
 export default function PlaylistPage() {
   const { playlistId } = useParams();

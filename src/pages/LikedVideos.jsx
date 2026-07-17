@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { fetchLikedVideos } from "../../../../cielo/lovable/src/features/likes/likeSlice";
-import VideoCard from "../../../../cielo/lovable/src/components/VideoCard";
+import { fetchLikedVideos } from "../features/likes/likeSlice";
+import VideoCard from "../components/VideoCard";
 
 export default function LikedVideos() {
   const dispatch = useDispatch();
