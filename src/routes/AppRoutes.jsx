@@ -22,6 +22,7 @@ import YourVideos from "../pages/YourVideos";
 import LikedVideos from "../pages/LikedVideos";
 import Channel from "../pages/Channel";
 import EditVideo from "../pages/EditVideo";
+import Explore from "../pages/Explore";
 
 const AppRoutes = () => {
   return (
@@ -63,6 +64,7 @@ const AppRoutes = () => {
           <Route path="/channel/:username" element={<Channel />} />
 
           <Route path="/edit-video/:videoId" element={<EditVideo />} />
+          <Route path="/explore" element={<Explore />} />
         </Route>
       </Route>
 

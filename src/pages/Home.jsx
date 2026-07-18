@@ -42,95 +42,100 @@ export default function Home() {
   const videos = useMemo(() => list || [], [list]);
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-10 pb-10">
       {/* Hero */}
       {!isSearching && !filter && (
-        <section
-          className="
-          relative
-          overflow-hidden
-          rounded-3xl
-          border
-          border-neutral-800
-          bg-gradient-to-br
-          from-neutral-900
-          via-neutral-950
-          to-black
-          p-8
-          md:p-12
-        ">
-          <div className="absolute right-0 top-0 h-80 w-80 rounded-full bg-rose-600/20 blur-[120px]" />
+        <section className="relative overflow-hidden rounded-3xl border border-neutral-800 bg-gradient-to-br from-neutral-900 via-black to-neutral-950 px-8 py-10 md:px-12 md:py-12">
+          <div className="absolute -right-32 top-0 h-96 w-96 rounded-full bg-rose-600/10 blur-[140px]" />
+          <div className="absolute bottom-0 left-0 h-72 w-72 rounded-full bg-orange-500/10 blur-[120px]" />
 
-          <div className="relative max-w-3xl">
-            <div
-              className="
-              inline-flex
-              items-center
-              gap-2
-              rounded-full
-              border
-              border-neutral-700
-              bg-neutral-900
-              px-4
-              py-2
-              text-sm
-            ">
-              <Sparkles size={15} className="text-yellow-400" />
-              New Experience
+          <div className="relative grid items-center gap-10 lg:grid-cols-2">
+            {/* Left */}
+            <div>
+              <div className="inline-flex items-center gap-2 rounded-full border border-neutral-700 bg-neutral-900/70 px-4 py-2 text-sm font-medium text-neutral-200 backdrop-blur">
+                <Sparkles size={15} className="text-yellow-400" />
+                Premium Streaming Platform
+              </div>
+
+              <h1 className="mt-7 text-5xl font-black leading-tight md:text-6xl">
+                Discover.
+                <br />
+                Watch.
+                <br />
+                <span className="bg-gradient-to-r from-rose-500 to-orange-400 bg-clip-text text-transparent">
+                  Create.
+                </span>
+              </h1>
+
+              <p className="mt-6 max-w-xl text-lg leading-8 text-neutral-400">
+                Watch millions of videos, discover talented creators, and enjoy
+                high-quality content across every category.
+              </p>
+
+              <div className="mt-8 flex flex-wrap gap-4">
+                <button
+                  onClick={() =>
+                    window.scrollTo({ top: 520, behavior: "smooth" })
+                  }
+                  className="rounded-xl bg-rose-600 px-7 py-3 font-semibold text-white transition-all duration-200 hover:bg-rose-500 hover:scale-[1.03]">
+                  ▶ Start Watching
+                </button>
+
+                <button
+                  onClick={() =>
+                    document
+                      .getElementById("categories")
+                      ?.scrollIntoView({ behavior: "smooth" })
+                  }
+                  className="rounded-xl border border-neutral-700 bg-neutral-900 px-7 py-3 font-semibold transition hover:border-neutral-500 hover:bg-neutral-800">
+                  📺 Browse Categories
+                </button>
+              </div>
             </div>
 
-            <h1
-              className="
-              mt-6
-              text-5xl
-              md:text-6xl
-              font-black
-              leading-tight
-            ">
-              Stream
-              <span className="text-rose-500"> Smarter</span>
-              <br />
-              Watch Better.
-            </h1>
+            {/* Right */}
+            <div className="hidden lg:flex justify-end">
+              <div className="w-full max-w-sm rounded-3xl border border-neutral-800 bg-neutral-900/70 p-7 backdrop-blur">
+                <div className="flex items-center gap-3">
+                  <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-rose-600/20 text-rose-500">
+                    <TrendingUp size={24} />
+                  </div>
 
-            <p
-              className="
-              mt-6
-              max-w-2xl
-              text-lg
-              leading-8
-              text-neutral-400
-            ">
-              Discover premium creators, trending videos and cinematic content
-              built for the next generation.
-            </p>
+                  <div>
+                    <h3 className="text-lg font-semibold">Trending Today</h3>
 
-            <div className="mt-8 flex flex-wrap gap-4">
-              <button
-                className="
-                rounded-xl
-                bg-rose-600
-                px-6
-                py-3
-                font-semibold
-                transition
-                hover:bg-rose-500
-              ">
-                Explore
-              </button>
+                    <p className="text-sm text-neutral-400">
+                      Explore what's popular
+                    </p>
+                  </div>
+                </div>
 
-              <button
-                className="
-                rounded-xl
-                border
-                border-neutral-700
-                px-6
-                py-3
-                font-semibold
-                hover:bg-neutral-900
-              ">
-                Trending
-              </button>
+                <div className="mt-8 space-y-4">
+                  <div className="flex items-center justify-between rounded-xl bg-neutral-800/60 px-4 py-3">
+                    <span>🎵 Music</span>
+                    <span className="text-neutral-400">Popular</span>
+                  </div>
+
+                  <div className="flex items-center justify-between rounded-xl bg-neutral-800/60 px-4 py-3">
+                    <span>🎮 Gaming</span>
+                    <span className="text-neutral-400">Trending</span>
+                  </div>
+
+                  <div className="flex items-center justify-between rounded-xl bg-neutral-800/60 px-4 py-3">
+                    <span>💻 Technology</span>
+                    <span className="text-neutral-400">Hot</span>
+                  </div>
+
+                  <div className="flex items-center justify-between rounded-xl bg-neutral-800/60 px-4 py-3">
+                    <span>🎬 Entertainment</span>
+                    <span className="text-neutral-400">New</span>
+                  </div>
+                </div>
+
+                <div className="mt-7 rounded-xl border border-emerald-500/20 bg-emerald-500/10 px-4 py-3 text-center text-sm text-emerald-400">
+                  🔥 Updated continuously
+                </div>
+              </div>
             </div>
           </div>
         </section>
@@ -138,7 +143,9 @@ export default function Home() {
 
       {/* Categories */}
       {!isSearching && (
-        <div className="flex gap-3 overflow-x-auto pb-2">
+        <div
+          id="categories"
+          className="flex gap-3 overflow-x-auto pb-2 no-scrollbar">
           {categories.map((category) => (
             <button
               key={category}
@@ -151,51 +158,15 @@ export default function Home() {
                       },
                 )
               }
-              className={`shrink-0 rounded-full px-5 py-2 text-sm font-medium transition ${
+              className={`shrink-0 rounded-full px-5 py-2.5 text-sm font-medium transition-all duration-200 ${
                 (category === "All" && !filter) ||
                 filter === category.toLowerCase()
-                  ? "bg-white text-black"
-                  : "bg-neutral-900 text-neutral-300 hover:bg-neutral-800"
+                  ? "bg-white text-black shadow-lg"
+                  : "bg-neutral-900 text-neutral-300 hover:bg-neutral-800 hover:text-white"
               }`}>
               {category}
             </button>
           ))}
-        </div>
-      )}
-
-      {/* Trending Strip */}
-
-      {!isSearching && (
-        <div className="grid gap-4 md:grid-cols-3">
-          <div className="rounded-2xl border border-neutral-800 bg-neutral-900 p-5">
-            <TrendingUp className="mb-3 text-rose-500" />
-
-            <h3 className="font-semibold">Trending Videos</h3>
-
-            <p className="mt-2 text-sm text-neutral-400">
-              Fresh content updated every minute.
-            </p>
-          </div>
-
-          <div className="rounded-2xl border border-neutral-800 bg-neutral-900 p-5">
-            <Flame className="mb-3 text-orange-400" />
-
-            <h3 className="font-semibold">Most Popular</h3>
-
-            <p className="mt-2 text-sm text-neutral-400">
-              Videos people are watching right now.
-            </p>
-          </div>
-
-          <div className="rounded-2xl border border-neutral-800 bg-neutral-900 p-5">
-            <Sparkles className="mb-3 text-yellow-400" />
-
-            <h3 className="font-semibold">Recommended</h3>
-
-            <p className="mt-2 text-sm text-neutral-400">
-              Personalized content for you.
-            </p>
-          </div>
         </div>
       )}
 
@@ -231,20 +202,19 @@ export default function Home() {
             <Flame size={36} className="text-rose-500" />
           </div>
 
-          <h2 className="text-2xl font-bold">No results found</h2>
+          <h2 className="text-3xl font-bold">Nothing to show</h2>
 
-          <p className="mt-3 max-w-md text-neutral-400">
+          <p className="mt-4 max-w-md text-neutral-400 leading-7">
             {isSearching ? (
               <>
-                No videos matched <br />
-                <span className="font-semibold text-white">"{query}"</span>
+                We couldn't find any videos matching
                 <br />
-                Try another keyword.
+                <span className="font-semibold text-white">"{query}"</span>
               </>
             ) : (
               <>
-                Looks like there aren't any videos available right now. Upload
-                your first video and start growing your audience.
+                Looks like there are no videos yet. Upload your first video and
+                start your journey.
               </>
             )}
           </p>
@@ -260,7 +230,7 @@ export default function Home() {
               transition
               hover:bg-rose-500
             ">
-            Upload Your First Video
+            Start Uploading
           </button>
         </div>
       ) : (
@@ -288,13 +258,13 @@ export default function Home() {
               <h2 className="text-2xl font-bold">
                 {isSearching
                   ? `Search Results for "${query}"`
-                  : "Latest Videos"}
+                  : "Recommended Videos"}
               </h2>
 
               <p className="mt-1 text-sm text-neutral-400">
                 {isSearching
                   ? `${videos.length} matching videos`
-                  : `${videos.length} videos available`}
+                  : "Fresh videos picked for you"}
               </p>
             </div>
 
@@ -319,7 +289,7 @@ export default function Home() {
               grid
               gap-6
               sm:grid-cols-2
-              lg:grid-cols-3
+              xl:grid-cols-3
               2xl:grid-cols-4
             ">
             {videos.map((video) => (

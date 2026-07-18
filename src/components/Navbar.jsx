@@ -11,6 +11,14 @@ import {
   Settings,
   X,
   Sparkles,
+  History,
+  Heart,
+  ListVideo,
+  UserPlus,
+  MessageCircle,
+  CheckCheck,
+  Video,
+  Tv,
 } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import toast from "react-hot-toast";
@@ -28,12 +36,69 @@ export default function Navbar({ onMenu }) {
   const [showProfile, setShowProfile] = useState(false);
   const [showSearch, setShowSearch] = useState(false);
 
+  const [showNotifications, setShowNotifications] = useState(false);
+
+  const [notifications, setNotifications] = useState([
+    {
+      id: 1,
+      type: "subscriber",
+      title: "New Subscriber",
+      text: "Alex subscribed to your channel.",
+      time: "2 min ago",
+      unread: true,
+    },
+    {
+      id: 2,
+      type: "like",
+      title: "New Like",
+      text: "Your video received a new like.",
+      time: "10 min ago",
+      unread: true,
+    },
+    {
+      id: 3,
+      type: "comment",
+      title: "New Comment",
+      text: "Someone commented on your latest upload.",
+      time: "1 hour ago",
+      unread: false,
+    },
+    {
+      id: 4,
+      type: "upload",
+      title: "Upload Complete",
+      text: "Your latest upload is live.",
+      time: "Today",
+      unread: false,
+    },
+  ]);
+
+  const unreadCount = notifications.filter((n) => n.unread).length;
+
+  const markAllRead = () => {
+    setNotifications((prev) =>
+      prev.map((n) => ({
+        ...n,
+        unread: false,
+      })),
+    );
+  };
+
+  const notificationRef = useRef(null);
+
   const profileRef = useRef(null);
 
   useEffect(() => {
     function handleClick(e) {
       if (profileRef.current && !profileRef.current.contains(e.target)) {
         setShowProfile(false);
+      }
+
+      if (
+        notificationRef.current &&
+        !notificationRef.current.contains(e.target)
+      ) {
+        setShowNotifications(false);
       }
     }
 
@@ -222,29 +287,56 @@ export default function Navbar({ onMenu }) {
                   Upload
                 </Link>
 
-                <button
-                  className="
-                    relative
-                    h-10
-                    w-10
-                    rounded-xl
-                    hover:bg-neutral-900
-                    transition
-                  ">
-                  <Bell size={19} className="mx-auto" />
+                <div ref={notificationRef} className="relative">
+                  <button
+                    onClick={() => setShowNotifications((v) => !v)}
+                    className="relative h-10 w-10 rounded-xl hover:bg-neutral-900 transition">
+                    <Bell size={19} className="mx-auto" />
 
-                  <span
-                    className="
-                      absolute
-                      top-2
-                      right-2
-                      h-2
-                      w-2
-                      rounded-full
-                      bg-rose-500
-                    "
-                  />
-                </button>
+                    {unreadCount > 0 && (
+                      <span className="absolute -right-1 -top-1 flex h-5 min-w-[20px] items-center justify-center rounded-full bg-rose-500 px-1 text-[10px] font-semibold text-white">
+                        {unreadCount}
+                      </span>
+                    )}
+                  </button>
+
+                  {showNotifications && (
+                    <div className="absolute right-0 mt-3 w-96 overflow-hidden rounded-2xl border border-neutral-800 bg-neutral-950 shadow-2xl">
+                      <div className="flex items-center justify-between border-b border-neutral-800 p-4">
+                        <h3 className="font-semibold">Notifications</h3>
+
+                        <button
+                          onClick={markAllRead}
+                          className="flex items-center gap-2 text-sm text-rose-400 hover:text-rose-300">
+                          <CheckCheck size={15} />
+                          Mark all read
+                        </button>
+                      </div>
+
+                      <div className="max-h-96 overflow-y-auto">
+                        {notifications.map((item, i) => (
+                          <button
+                            key={i}
+                            className="flex w-full flex-col items-start border-b border-neutral-900 px-4 py-4 text-left hover:bg-neutral-900">
+                            <span className="font-medium">{item.title}</span>
+
+                            <span className="mt-1 text-sm text-neutral-400">
+                              {item.text}
+                            </span>
+
+                            <span className="mt-2 text-xs text-neutral-500">
+                              {item.time}
+                            </span>
+                          </button>
+                        ))}
+                      </div>
+
+                      <button className="w-full border-t border-neutral-800 py-3 text-sm font-medium hover:bg-neutral-900">
+                        View all notifications
+                      </button>
+                    </div>
+                  )}
+                </div>
 
                 <div ref={profileRef} className="relative">
                   <button
@@ -306,37 +398,65 @@ export default function Navbar({ onMenu }) {
                         <p className="text-sm text-neutral-400">
                           @{user.username}
                         </p>
+
+                        <div className="mt-3 inline-flex rounded-full bg-rose-600/15 px-3 py-1 text-xs font-medium text-rose-400">
+                          Premium Creator
+                        </div>
                       </div>
 
                       <div className="p-2">
                         <Link
                           to="/profile"
                           onClick={() => setShowProfile(false)}
-                          className="
-                            flex
-                            items-center
-                            gap-3
-                            px-4
-                            py-3
-                            rounded-xl
-                            hover:bg-neutral-900
-                          ">
+                          className="flex items-center gap-3 rounded-xl px-4 py-3 hover:bg-neutral-900">
                           <User size={18} />
                           Profile
                         </Link>
 
                         <Link
+                          to={`/channel/${user.username}`}
+                          onClick={() => setShowProfile(false)}
+                          className="flex items-center gap-3 rounded-xl px-4 py-3 hover:bg-neutral-900">
+                          <Tv size={18} />
+                          Your Channel
+                        </Link>
+
+                        <Link
                           to="/dashboard"
                           onClick={() => setShowProfile(false)}
-                          className="
-                            flex
-                            items-center
-                            gap-3
-                            px-4
-                            py-3
-                            rounded-xl
-                            hover:bg-neutral-900
-                          ">
+                          className="flex items-center gap-3 rounded-xl px-4 py-3 hover:bg-neutral-900">
+                          <ListVideo size={18} />
+                          Your Videos
+                        </Link>
+
+                        <Link
+                          to="/playlists"
+                          onClick={() => setShowProfile(false)}
+                          className="flex items-center gap-3 rounded-xl px-4 py-3 hover:bg-neutral-900">
+                          <ListVideo size={18} />
+                          Playlists
+                        </Link>
+
+                        <Link
+                          to="/liked"
+                          onClick={() => setShowProfile(false)}
+                          className="flex items-center gap-3 rounded-xl px-4 py-3 hover:bg-neutral-900">
+                          <Heart size={18} />
+                          Liked Videos
+                        </Link>
+
+                        <Link
+                          to="/history"
+                          onClick={() => setShowProfile(false)}
+                          className="flex items-center gap-3 rounded-xl px-4 py-3 hover:bg-neutral-900">
+                          <History size={18} />
+                          Watch History
+                        </Link>
+
+                        <Link
+                          to="/dashboard"
+                          onClick={() => setShowProfile(false)}
+                          className="flex items-center gap-3 rounded-xl px-4 py-3 hover:bg-neutral-900">
                           <LayoutDashboard size={18} />
                           Dashboard
                         </Link>
@@ -344,34 +464,16 @@ export default function Navbar({ onMenu }) {
                         <Link
                           to="/settings"
                           onClick={() => setShowProfile(false)}
-                          className="
-                            flex
-                            items-center
-                            gap-3
-                            px-4
-                            py-3
-                            rounded-xl
-                            hover:bg-neutral-900
-                          ">
+                          className="flex items-center gap-3 rounded-xl px-4 py-3 hover:bg-neutral-900">
                           <Settings size={18} />
                           Settings
                         </Link>
 
+                        <div className="my-2 border-t border-neutral-800" />
+
                         <button
                           onClick={logout}
-                          className="
-                            mt-2
-                            flex
-                            w-full
-                            items-center
-                            gap-3
-                            rounded-xl
-                            px-4
-                            py-3
-                            text-left
-                            text-red-400
-                            hover:bg-red-500/10
-                          ">
+                          className="flex w-full items-center gap-3 rounded-xl px-4 py-3 text-left text-red-400 hover:bg-red-500/10">
                           <LogOut size={18} />
                           Logout
                         </button>

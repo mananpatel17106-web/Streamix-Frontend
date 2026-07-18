@@ -7,8 +7,10 @@ export const registerUser = createAsyncThunk(
     try {
       const { data } = await api.post("/users/register", formData);
       return data.data;
-    } catch (e) { return rejectWithValue(apiErr(e, "Registration failed")); }
-  }
+    } catch (e) {
+      return rejectWithValue(apiErr(e, "Registration failed"));
+    }
+  },
 );
 
 export const loginUser = createAsyncThunk(
@@ -22,12 +24,16 @@ export const loginUser = createAsyncThunk(
       const token = data?.data?.accessToken;
       if (token) localStorage.setItem("streamix_token", token);
       return data.data;
-    } catch (e) { return rejectWithValue(apiErr(e, "Login failed")); }
-  }
+    } catch (e) {
+      return rejectWithValue(apiErr(e, "Login failed"));
+    }
+  },
 );
 
 export const logoutUser = createAsyncThunk("auth/logout", async () => {
-  try { await api.post("/users/logout"); } catch {}
+  try {
+    await api.post("/users/logout");
+  } catch {}
   localStorage.removeItem("streamix_token");
   return null;
 });
@@ -38,8 +44,10 @@ export const fetchCurrentUser = createAsyncThunk(
     try {
       const { data } = await api.get("/users/current-user");
       return data.data;
-    } catch (e) { return rejectWithValue(apiErr(e)); }
-  }
+    } catch (e) {
+      return rejectWithValue(apiErr(e));
+    }
+  },
 );
 
 export const changePassword = createAsyncThunk(
@@ -48,8 +56,10 @@ export const changePassword = createAsyncThunk(
     try {
       const { data } = await api.post("/users/change-password", body);
       return data.data;
-    } catch (e) { return rejectWithValue(apiErr(e)); }
-  }
+    } catch (e) {
+      return rejectWithValue(apiErr(e));
+    }
+  },
 );
 
 export const updateAccount = createAsyncThunk(
@@ -58,30 +68,38 @@ export const updateAccount = createAsyncThunk(
     try {
       const { data } = await api.patch("/users/update-account-details", body);
       return data.data;
-    } catch (e) { return rejectWithValue(apiErr(e)); }
-  }
+    } catch (e) {
+      return rejectWithValue(apiErr(e));
+    }
+  },
 );
 
 export const updateAvatar = createAsyncThunk(
   "auth/updateAvatar",
   async (file, { rejectWithValue }) => {
     try {
-      const fd = new FormData(); fd.append("avatar", file);
+      const fd = new FormData();
+      fd.append("avatar", file);
       const { data } = await api.patch("/users/avatar", fd);
       return data.data;
-    } catch (e) { return rejectWithValue(apiErr(e)); }
-  }
+    } catch (e) {
+      return rejectWithValue(apiErr(e));
+    }
+  },
 );
 
 export const updateCoverImage = createAsyncThunk(
   "auth/updateCover",
   async (file, { rejectWithValue }) => {
     try {
-      const fd = new FormData(); fd.append("coverImage", file);
+      const fd = new FormData();
+      fd.append("coverImage", file);
       const { data } = await api.patch("/users/cover-image", fd);
       return data.data;
-    } catch (e) { return rejectWithValue(apiErr(e)); }
-  }
+    } catch (e) {
+      return rejectWithValue(apiErr(e));
+    }
+  },
 );
 
 export const fetchChannelProfile = createAsyncThunk(
@@ -90,8 +108,10 @@ export const fetchChannelProfile = createAsyncThunk(
     try {
       const { data } = await api.get(`/users/c/${username}`);
       return data.data;
-    } catch (e) { return rejectWithValue(apiErr(e)); }
-  }
+    } catch (e) {
+      return rejectWithValue(apiErr(e));
+    }
+  },
 );
 
 export const fetchWatchHistory = createAsyncThunk(
@@ -100,8 +120,22 @@ export const fetchWatchHistory = createAsyncThunk(
     try {
       const { data } = await api.get("/users/history");
       return data.data;
-    } catch (e) { return rejectWithValue(apiErr(e)); }
-  }
+    } catch (e) {
+      return rejectWithValue(apiErr(e));
+    }
+  },
+);
+
+export const addToHistory = createAsyncThunk(
+  "auth/addToHistory",
+  async (videoId, { rejectWithValue }) => {
+    try {
+      await api.patch(`/users/history/${videoId}`);
+      return videoId;
+    } catch (e) {
+      return rejectWithValue(apiErr(e));
+    }
+  },
 );
 
 const initial = {
@@ -117,26 +151,54 @@ const authSlice = createSlice({
   name: "auth",
   initialState: initial,
   reducers: {
-    clearError: (s) => { s.error = null; },
+    clearError: (s) => {
+      s.error = null;
+    },
   },
   extraReducers: (b) => {
-    b.addCase(loginUser.pending, (s) => { s.status = "loading"; s.error = null; });
-    b.addCase(loginUser.fulfilled, (s, a) => {
-      s.status = "idle"; s.user = a.payload.user; s.accessToken = a.payload.accessToken;
+    b.addCase(loginUser.pending, (s) => {
+      s.status = "loading";
+      s.error = null;
     });
-    b.addCase(loginUser.rejected, (s, a) => { s.status = "idle"; s.error = a.payload; });
+    b.addCase(loginUser.fulfilled, (s, a) => {
+      s.status = "idle";
+      s.user = a.payload.user;
+      s.accessToken = a.payload.accessToken;
+    });
+    b.addCase(loginUser.rejected, (s, a) => {
+      s.status = "idle";
+      s.error = a.payload;
+    });
 
-    b.addCase(fetchCurrentUser.fulfilled, (s, a) => { s.user = a.payload; });
-    b.addCase(fetchCurrentUser.rejected, (s) => { s.user = null; });
+    b.addCase(fetchCurrentUser.fulfilled, (s, a) => {
+      s.user = a.payload;
+    });
+    b.addCase(fetchCurrentUser.rejected, (s) => {
+      s.user = null;
+    });
 
-    b.addCase(logoutUser.fulfilled, (s) => { s.user = null; s.accessToken = null; });
+    b.addCase(logoutUser.fulfilled, (s) => {
+      s.user = null;
+      s.accessToken = null;
+    });
 
-    b.addCase(updateAccount.fulfilled, (s, a) => { s.user = a.payload; });
-    b.addCase(updateAvatar.fulfilled, (s, a) => { s.user = a.payload; });
-    b.addCase(updateCoverImage.fulfilled, (s, a) => { s.user = a.payload; });
+    b.addCase(updateAccount.fulfilled, (s, a) => {
+      s.user = a.payload;
+    });
+    b.addCase(updateAvatar.fulfilled, (s, a) => {
+      s.user = a.payload;
+    });
+    b.addCase(updateCoverImage.fulfilled, (s, a) => {
+      s.user = a.payload;
+    });
 
-    b.addCase(fetchChannelProfile.fulfilled, (s, a) => { s.channel = a.payload; });
-    b.addCase(fetchWatchHistory.fulfilled, (s, a) => { s.history = a.payload || []; });
+    b.addCase(fetchChannelProfile.fulfilled, (s, a) => {
+      s.channel = a.payload;
+    });
+    b.addCase(fetchWatchHistory.fulfilled, (s, a) => {
+      s.history = a.payload || [];
+    });
+    b.addCase(addToHistory.fulfilled, () => {});
   },
 });
 

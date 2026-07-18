@@ -33,6 +33,8 @@ import PlaylistModal from "../components/playlist/PlaylistModal";
 
 import { formatViews, timeAgo } from "../utils/format";
 
+import { fetchWatchHistory, addToHistory } from "../features/auth/authSlice";
+
 export default function Watch() {
   const { videoId } = useParams();
 
@@ -80,6 +82,12 @@ export default function Watch() {
       dispatch(fetchSubscribedChannels(user._id));
     }
   }, [dispatch, videoId, user]);
+
+  useEffect(() => {
+    if (!user || !current?._id) return;
+
+    dispatch(addToHistory(current._id));
+  }, [dispatch, user, current?._id]);
 
   useEffect(() => {
     if (!current?.owner) return;
