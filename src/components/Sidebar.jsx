@@ -1,4 +1,4 @@
-import { NavLink } from "react-router-dom";
+import { NavLink, useSearchParams } from "react-router-dom";
 import { useSelector } from "react-redux";
 import {
   Home,
@@ -22,6 +22,9 @@ const navItem = ({ isActive }) =>
 
 export default function Sidebar({ open, onClose }) {
   const { user } = useSelector((state) => state.auth);
+  const [searchParams] = useSearchParams();
+
+  const isTrending = searchParams.get("filter") === "trending";
 
   return (
     <>
@@ -41,28 +44,43 @@ export default function Sidebar({ open, onClose }) {
           duration-300
           ${open ? "translate-x-0" : "-translate-x-full"}
           lg:translate-x-0
-        `}
-      >
+        `}>
         {/* Mobile Header */}
         <div className="flex items-center justify-between p-4 lg:hidden">
           <h2 className="text-lg font-bold text-white">Menu</h2>
 
           <button
             onClick={onClose}
-            className="rounded-lg p-2 hover:bg-neutral-900"
-          >
+            className="rounded-lg p-2 hover:bg-neutral-900">
             <X size={18} />
           </button>
         </div>
 
         {/* Navigation */}
         <nav className="space-y-1 px-3">
-          <NavLink end to="/" className={navItem}>
+          <NavLink
+            end
+            to="/"
+            className={({ isActive }) =>
+              `flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 ${
+                isActive && !isTrending
+                  ? "bg-rose-600 text-white shadow-lg"
+                  : "text-neutral-400 hover:bg-neutral-900 hover:text-white"
+              }`
+            }>
             <Home size={18} />
             <span>Home</span>
           </NavLink>
 
-          <NavLink to="/?filter=trending" className={navItem}>
+          <NavLink
+            to="/?filter=trending"
+            className={({ isActive }) =>
+              `flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 ${
+                isActive && isTrending
+                  ? "bg-rose-600 text-white shadow-lg"
+                  : "text-neutral-400 hover:bg-neutral-900 hover:text-white"
+              }`
+            }>
             <Flame size={18} />
             <span>Trending</span>
           </NavLink>
@@ -124,17 +142,14 @@ export default function Sidebar({ open, onClose }) {
 
           <NavLink
             to="/dashboard"
-            className="mt-5 flex items-center justify-center rounded-xl bg-rose-600 py-3 font-semibold text-white transition hover:bg-rose-500"
-          >
+            className="mt-5 flex items-center justify-center rounded-xl bg-rose-600 py-3 font-semibold text-white transition hover:bg-rose-500">
             Open Studio
           </NavLink>
         </div>
 
         {/* Footer */}
         <div className="mx-4 mt-10 border-t border-neutral-800 pt-5 pb-8">
-          <p className="text-xs leading-6 text-neutral-500">
-            Streamix © 2026
-          </p>
+          <p className="text-xs leading-6 text-neutral-500">Streamix © 2026</p>
 
           <p className="mt-2 text-xs text-neutral-600">
             Built with React, Redux Toolkit & Tailwind CSS.

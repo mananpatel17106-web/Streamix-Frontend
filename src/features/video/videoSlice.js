@@ -10,7 +10,7 @@ export const fetchVideos = createAsyncThunk(
     } catch (error) {
       return rejectWithValue(apiErr(error));
     }
-  }
+  },
 );
 
 export const fetchVideoById = createAsyncThunk(
@@ -22,7 +22,7 @@ export const fetchVideoById = createAsyncThunk(
     } catch (error) {
       return rejectWithValue(apiErr(error));
     }
-  }
+  },
 );
 
 export const publishVideo = createAsyncThunk(
@@ -34,7 +34,7 @@ export const publishVideo = createAsyncThunk(
     } catch (error) {
       return rejectWithValue(apiErr(error));
     }
-  }
+  },
 );
 
 export const updateVideo = createAsyncThunk(
@@ -46,7 +46,7 @@ export const updateVideo = createAsyncThunk(
     } catch (error) {
       return rejectWithValue(apiErr(error));
     }
-  }
+  },
 );
 
 export const deleteVideo = createAsyncThunk(
@@ -58,21 +58,19 @@ export const deleteVideo = createAsyncThunk(
     } catch (error) {
       return rejectWithValue(apiErr(error));
     }
-  }
+  },
 );
 
 export const togglePublish = createAsyncThunk(
   "videos/togglePublish",
   async (videoId, { rejectWithValue }) => {
     try {
-      const { data } = await api.patch(
-        `/videos/toggle/publish/${videoId}`
-      );
+      const { data } = await api.patch(`/videos/toggle/publish/${videoId}`);
       return data.data;
     } catch (error) {
       return rejectWithValue(apiErr(error));
     }
-  }
+  },
 );
 
 const initialState = {
@@ -113,13 +111,9 @@ const videoSlice = createSlice({
           state.page = payload?.page || 1;
           state.totalPages = payload?.totalPages || 1;
           state.totalVideos =
-            payload?.totalDocs ||
-            payload?.totalVideos ||
-            state.list.length;
+            payload?.totalDocs || payload?.totalVideos || state.list.length;
 
-          state.hasMore =
-            payload?.hasNextPage ??
-            state.page < state.totalPages;
+          state.hasMore = payload?.hasNextPage ?? state.page < state.totalPages;
         }
       })
 
@@ -135,14 +129,26 @@ const videoSlice = createSlice({
 
       .addCase(fetchVideoById.fulfilled, (state, action) => {
         state.status = "idle";
+
         state.current = action.payload;
+
+        const index = state.list.findIndex(
+          (video) => video._id === action.payload._id,
+        );
+
+        if (index !== -1) {
+          state.list[index] = {
+            ...state.list[index],
+            ...action.payload,
+          };
+        }
       })
 
       .addCase(fetchVideoById.rejected, (state, action) => {
         state.status = "idle";
         state.error = action.payload;
       })
-            .addCase(publishVideo.pending, (state) => {
+      .addCase(publishVideo.pending, (state) => {
         state.status = "loading";
         state.error = null;
       })
@@ -168,9 +174,7 @@ const videoSlice = createSlice({
         state.status = "idle";
 
         state.list = state.list.map((video) =>
-          video._id === action.payload._id
-            ? action.payload
-            : video
+          video._id === action.payload._id ? action.payload : video,
         );
 
         if (state.current?._id === action.payload._id) {
@@ -191,9 +195,7 @@ const videoSlice = createSlice({
       .addCase(deleteVideo.fulfilled, (state, action) => {
         state.status = "idle";
 
-        state.list = state.list.filter(
-          (video) => video._id !== action.payload
-        );
+        state.list = state.list.filter((video) => video._id !== action.payload);
 
         if (state.current?._id === action.payload) {
           state.current = null;
@@ -218,9 +220,7 @@ const videoSlice = createSlice({
         state.status = "idle";
 
         state.list = state.list.map((video) =>
-          video._id === action.payload._id
-            ? action.payload
-            : video
+          video._id === action.payload._id ? action.payload : video,
         );
 
         if (state.current?._id === action.payload._id) {

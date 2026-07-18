@@ -55,13 +55,13 @@ const slice = createSlice({
     b.addCase(fetchSubscribedChannels.fulfilled, (state, action) => {
       state.status = "idle";
 
-      const channels = Array.isArray(action.payload)
-        ? action.payload
-        : action.payload?.docs || [];
+      const channels = action.payload?.data || [];
 
       state.channels = channels;
 
-      state.subscribedChannelIds = channels.map((channel) => channel._id);
+      state.subscribedChannelIds = channels.map(
+        (item) => item.channel?._id || item._id,
+      );
     });
 
     b.addCase(fetchSubscribedChannels.rejected, (state, action) => {
@@ -84,6 +84,7 @@ const slice = createSlice({
       state.status = "idle";
       state.error = action.payload;
     });
+
     b.addCase(toggleSubscription.pending, (state) => {
       state.status = "loading";
     });
@@ -91,16 +92,39 @@ const slice = createSlice({
       state.status = "idle";
 
       const channelId = action.meta.arg;
+      const { subscribed, subscribersCount } = action.payload || {};
 
-      const exists = state.subscribedChannelIds.includes(channelId);
-
-      if (exists) {
+      // Update subscribed ids
+      if (subscribed) {
+        if (!state.subscribedChannelIds.includes(channelId)) {
+          state.subscribedChannelIds.push(channelId);
+        }
+      } else {
         state.subscribedChannelIds = state.subscribedChannelIds.filter(
           (id) => id !== channelId,
         );
-      } else {
-        state.subscribedChannelIds.push(channelId);
       }
+      // Update subscriptions page instantly
+      state.channels = state.channels
+        .map((item) => {
+          const ch = item.channel || item;
+
+          if (ch._id !== channelId) return item;
+
+          return {
+            ...item,
+            channel: {
+              ...ch,
+              subscribersCount,
+            },
+          };
+        })
+        .filter((item) => {
+          const ch = item.channel || item;
+
+          // Unsubscribe thai gaya pachi card remove thai jashe
+          return state.subscribedChannelIds.includes(ch._id);
+        });
     });
 
     b.addCase(toggleSubscription.rejected, (state, action) => {

@@ -5,6 +5,7 @@ import { fetchCurrentUser } from "./features/auth/authSlice";
 
 import Layout from "./components/Layout";
 import ProtectedRoute from "./components/ProtectedRoute";
+import ScrollToTop from "./components/ScrollToTop";
 
 import Home from "./pages/Home";
 import Login from "./pages/Login";
@@ -28,36 +29,45 @@ export default function App() {
   const token = useSelector((s) => s.auth.accessToken);
 
   useEffect(() => {
-    if (token) dispatch(fetchCurrentUser());
+    if (token) {
+      dispatch(fetchCurrentUser());
+    }
   }, [dispatch, token]);
 
   return (
-    <Routes>
-      <Route path="/login" element={<Login />} />
-      <Route path="/register" element={<Register />} />
+    <>
+      <ScrollToTop />
 
-      <Route element={<Layout />}>
-        <Route index element={<Home />} />
-        <Route path="/watch/:videoId" element={<Watch />} />
-        <Route path="/c/:username" element={<Channel />} />
-        <Route path="/tweets/:userId" element={<Tweets />} />
-        <Route path="/playlist/:playlistId" element={<PlaylistPage />} />
+      <Routes>
+        <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
 
-        <Route element={<ProtectedRoute />}>
-          <Route path="/upload" element={<Upload />} />
-          <Route path="/edit/:videoId" element={<EditVideo />} />
-          <Route path="/profile" element={<Profile />} />
-          <Route path="/liked" element={<LikedVideos />} />
-          <Route path="/history" element={<History />} />
-          <Route path="/dashboard" element={<Dashboard />} />
-          <Route path="/playlists" element={<Playlists />} />
-          <Route path="/subscriptions" element={<Subscriptions />} />
+        <Route element={<Layout />}>
+          <Route index element={<Home />} />
+          <Route path="/watch/:videoId" element={<Watch />} />
+          <Route path="/c/:username" element={<Channel />} />
+          <Route path="/tweets/:userId" element={<Tweets />} />
+          <Route path="/playlist/:playlistId" element={<PlaylistPage />} />
+
+          <Route element={<ProtectedRoute />}>
+            <Route path="/upload" element={<Upload />} />
+            <Route path="/edit/:videoId" element={<EditVideo />} />
+            <Route path="/profile" element={<Profile />} />
+            <Route path="/liked" element={<LikedVideos />} />
+            <Route path="/history" element={<History />} />
+            <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/playlists" element={<Playlists />} />
+            <Route
+              path="/subscriptions"
+              element={<Subscriptions />}
+            />
+          </Route>
+
+          <Route path="*" element={<NotFound />} />
         </Route>
 
-        <Route path="*" element={<NotFound />} />
-      </Route>
-
-      <Route path="/404" element={<Navigate to="/" replace />} />
-    </Routes>
+        <Route path="/404" element={<Navigate to="/" replace />} />
+      </Routes>
+    </>
   );
 }

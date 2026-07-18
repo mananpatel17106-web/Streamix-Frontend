@@ -164,6 +164,8 @@ export default function Watch() {
       setComment("");
       toast.success("Comment added");
       setCommentCount((prev) => prev + 1);
+
+      dispatch(fetchComments(videoId));
     }
   };
 
@@ -195,7 +197,7 @@ export default function Watch() {
       {/* LEFT */}
 
       <section>
-        <div className="sticky top-20 overflow-hidden rounded-2xl border border-white/10 bg-black shadow-2xl">
+        <div className="overflow-hidden rounded-2xl border border-white/10 bg-black shadow-2xl">
           <video
             src={current.videoFile}
             poster={current.thumbnail}
@@ -375,47 +377,49 @@ export default function Watch() {
             </div>
           ) : (
             <div className="space-y-6">
-              {comments.map((c) => (
-                <div
-                  key={c._id}
-                  className="flex gap-4 rounded-xl border border-white/5 bg-neutral-900/50 p-4 transition hover:border-white/10">
-                  <img
-                    src={c.owner?.avatar}
-                    alt={c.owner?.username}
-                    className="h-10 w-10 rounded-full object-cover"
-                  />
+              {comments.map((c) => {
+                return (
+                  <div
+                    key={c._id}
+                    className="flex gap-4 rounded-xl border border-white/5 bg-neutral-900/50 p-4 transition hover:border-white/10">
+                    <img
+                      src={c.owner?.avatar}
+                      alt={c.owner?.username}
+                      className="h-10 w-10 rounded-full object-cover"
+                    />
 
-                  <div className="flex-1">
-                    <div className="flex items-center gap-2 flex-wrap">
-                      <span className="font-medium text-white">
-                        {c.owner?.fullName || c.owner?.username}
-                      </span>
+                    <div className="flex-1">
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <span className="font-medium text-white">
+                          {c.owner?.fullName || c.owner?.username}
+                        </span>
 
-                      <span className="text-xs text-neutral-500">
-                        @{c.owner?.username}
-                      </span>
+                        <span className="text-xs text-neutral-500">
+                          @{c.owner?.username}
+                        </span>
 
-                      <span className="text-xs text-neutral-600">•</span>
+                        <span className="text-xs text-neutral-600">•</span>
 
-                      <span className="text-xs text-neutral-500">
-                        {timeAgo(c.createdAt)}
-                      </span>
+                        <span className="text-xs text-neutral-500">
+                          {timeAgo(c.createdAt)}
+                        </span>
+                      </div>
+
+                      <p className="mt-2 whitespace-pre-wrap text-sm leading-6 text-neutral-300">
+                        {c.content}
+                      </p>
                     </div>
 
-                    <p className="mt-2 whitespace-pre-wrap text-sm leading-6 text-neutral-300">
-                      {c.content}
-                    </p>
+                    {user?._id === c.owner?._id && (
+                      <button
+                        onClick={() => removeComment(c._id)}
+                        className="self-start rounded-lg p-2 text-neutral-500 transition hover:bg-red-500/10 hover:text-red-500">
+                        <Trash2 size={18} />
+                      </button>
+                    )}
                   </div>
-
-                  {user?._id === c.owner?._id && (
-                    <button
-                      onClick={() => removeComment(c._id)}
-                      className="self-start rounded-lg p-2 text-neutral-500 transition hover:bg-red-500/10 hover:text-red-500">
-                      <Trash2 size={18} />
-                    </button>
-                  )}
-                </div>
-              ))}
+                );
+              })}
             </div>
           )}
         </section>

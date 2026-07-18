@@ -1,4 +1,4 @@
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import {
   Menu,
@@ -20,6 +20,7 @@ import { logoutUser } from "../features/auth/authSlice";
 export default function Navbar({ onMenu }) {
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
 
   const { user } = useSelector((state) => state.auth);
 
@@ -41,6 +42,35 @@ export default function Navbar({ onMenu }) {
     return () => document.removeEventListener("mousedown", handleClick);
   }, []);
 
+  useEffect(() => {
+    const currentQuery = searchParams.get("query") || "";
+
+    if (currentQuery !== query) {
+      setQuery(currentQuery);
+    }
+  }, [searchParams]);
+
+  useEffect(() => {
+    const value = query.trim();
+
+    const timer = setTimeout(() => {
+      if (value.length === 0) {
+        navigate("/", {
+          replace: true,
+        });
+        return;
+      }
+
+      if (value.length >= 2) {
+        navigate(`/?query=${encodeURIComponent(value)}`, {
+          replace: true,
+        });
+      }
+    }, 400);
+
+    return () => clearTimeout(timer);
+  }, [query]);
+
   const logout = async () => {
     await dispatch(logoutUser());
 
@@ -51,12 +81,6 @@ export default function Navbar({ onMenu }) {
 
   const submit = (e) => {
     e.preventDefault();
-
-    if (!query.trim()) return;
-
-    navigate(`/?query=${encodeURIComponent(query.trim())}`);
-
-    setShowSearch(false);
   };
 
   return (
