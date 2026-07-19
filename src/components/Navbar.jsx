@@ -25,6 +25,14 @@ import toast from "react-hot-toast";
 
 import { logoutUser } from "../features/auth/authSlice";
 
+import {
+  fetchNotifications,
+  markNotificationAsRead,
+  markAllNotificationsAsRead,
+} from "../features/notifications/notificationSlice";
+
+import { timeAgo } from "../utils/timeAgo";
+
 export default function Navbar({ onMenu }) {
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -32,57 +40,17 @@ export default function Navbar({ onMenu }) {
 
   const { user } = useSelector((state) => state.auth);
 
+  const { notifications, loading } = useSelector(
+    (state) => state.notifications,
+  );
+
+  const unreadCount = notifications.filter((item) => !item.isRead).length;
+
   const [query, setQuery] = useState("");
   const [showProfile, setShowProfile] = useState(false);
   const [showSearch, setShowSearch] = useState(false);
 
   const [showNotifications, setShowNotifications] = useState(false);
-
-  const [notifications, setNotifications] = useState([
-    {
-      id: 1,
-      type: "subscriber",
-      title: "New Subscriber",
-      text: "Alex subscribed to your channel.",
-      time: "2 min ago",
-      unread: true,
-    },
-    {
-      id: 2,
-      type: "like",
-      title: "New Like",
-      text: "Your video received a new like.",
-      time: "10 min ago",
-      unread: true,
-    },
-    {
-      id: 3,
-      type: "comment",
-      title: "New Comment",
-      text: "Someone commented on your latest upload.",
-      time: "1 hour ago",
-      unread: false,
-    },
-    {
-      id: 4,
-      type: "upload",
-      title: "Upload Complete",
-      text: "Your latest upload is live.",
-      time: "Today",
-      unread: false,
-    },
-  ]);
-
-  const unreadCount = notifications.filter((n) => n.unread).length;
-
-  const markAllRead = () => {
-    setNotifications((prev) =>
-      prev.map((n) => ({
-        ...n,
-        unread: false,
-      })),
-    );
-  };
 
   const notificationRef = useRef(null);
 
@@ -136,6 +104,12 @@ export default function Navbar({ onMenu }) {
     return () => clearTimeout(timer);
   }, [query]);
 
+  useEffect(() => {
+    if (user) {
+      dispatch(fetchNotifications());
+    }
+  }, [dispatch, user]);
+
   const logout = async () => {
     await dispatch(logoutUser());
 
@@ -146,6 +120,25 @@ export default function Navbar({ onMenu }) {
 
   const submit = (e) => {
     e.preventDefault();
+  };
+
+  const getNotificationIcon = (type) => {
+    switch (type) {
+      case "like":
+        return <Heart size={18} className="text-red-500" />;
+
+      case "comment":
+        return <MessageCircle size={18} className="text-blue-500" />;
+
+      case "subscribe":
+        return <UserPlus size={18} className="text-green-500" />;
+
+      case "upload":
+        return <Video size={18} className="text-yellow-500" />;
+
+      default:
+        return <Bell size={18} />;
+    }
   };
 
   return (
@@ -306,7 +299,7 @@ export default function Navbar({ onMenu }) {
                         <h3 className="font-semibold">Notifications</h3>
 
                         <button
-                          onClick={markAllRead}
+                          onClick={() => dispatch(markAllNotificationsAsRead())}
                           className="flex items-center gap-2 text-sm text-rose-400 hover:text-rose-300">
                           <CheckCheck size={15} />
                           Mark all read
@@ -314,19 +307,47 @@ export default function Navbar({ onMenu }) {
                       </div>
 
                       <div className="max-h-96 overflow-y-auto">
+                        {!loading && notifications.length === 0 && (
+                          <div className="py-10 text-center text-neutral-500">
+                            No notifications yet.
+                          </div>
+                        )}
                         {notifications.map((item, i) => (
                           <button
-                            key={i}
-                            className="flex w-full flex-col items-start border-b border-neutral-900 px-4 py-4 text-left hover:bg-neutral-900">
-                            <span className="font-medium">{item.title}</span>
+                            key={item._id}
+                            onClick={() => {
+                              if (!item.isRead) {
+                                dispatch(markNotificationAsRead(item._id));
+                              }
 
-                            <span className="mt-1 text-sm text-neutral-400">
-                              {item.text}
-                            </span>
+                              if (item.video?._id) {
+                                navigate(`/watch/${item.video._id}`);
+                                setShowNotifications(false);
+                              }
+                            }}
+                            className={`flex w-full items-start gap-3 border-b border-neutral-900 px-4 py-4 text-left hover:bg-neutral-900 transition ${
+                              !item.isRead ? "bg-neutral-900/50" : ""
+                            }`}>
+                            <div className="mt-1">
+                              {getNotificationIcon(item.type)}
+                            </div>
 
-                            <span className="mt-2 text-xs text-neutral-500">
-                              {item.time}
-                            </span>
+                            <div className="flex-1">
+                              <p className="text-sm">
+                                <span className="font-semibold">
+                                  {item.sender?.fullName}
+                                </span>{" "}
+                                {item.message}
+                              </p>
+
+                              <p className="mt-1 text-xs text-neutral-500">
+                                {timeAgo(item.createdAt)}
+                              </p>
+                            </div>
+
+                            {!item.isRead && (
+                              <span className="mt-2 h-2 w-2 rounded-full bg-rose-500" />
+                            )}
                           </button>
                         ))}
                       </div>

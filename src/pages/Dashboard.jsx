@@ -21,8 +21,8 @@ export default function Dashboard() {
   const [status, setStatus] = useState("all");
 
   useEffect(() => {
-    dispatch(getChannelStats());
-    dispatch(getChannelVideos());
+    dispatch(fetchChannelStats());
+    dispatch(fetchChannelVideos());
   }, [dispatch]);
 
   const filteredVideos = useMemo(() => {

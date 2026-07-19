@@ -7,6 +7,7 @@ import playlistReducer from "../features/playlist/playlistSlice";
 import subscriptionReducer from "../features/subscription/subscriptionSlice";
 import tweetReducer from "../features/tweets/tweetSlice";
 import dashboardReducer from "../features/dashboard/dashboardSlice";
+import notificationReducer from "../features/notifications/notificationSlice";
 
 export const store = configureStore({
   reducer: {
@@ -18,6 +19,7 @@ export const store = configureStore({
     subscriptions: subscriptionReducer,
     tweets: tweetReducer,
     dashboard: dashboardReducer,
+    notifications: notificationReducer,
   },
   middleware: (getDefault) => getDefault({ serializableCheck: false }),
 });
