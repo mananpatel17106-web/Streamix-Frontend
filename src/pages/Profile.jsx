@@ -62,45 +62,71 @@ export default function Profile() {
   };
   const doAvatar = async (f) => {
     const r = await dispatch(updateAvatar(f));
-    if (r.meta.requestStatus === "fulfilled") toast.success("Avatar updated");
+    if (r.meta.requestStatus === "fulfilled"){ 
+      await dispatch(fetchCurrentUser());
+      toast.success("Avatar updated");
+    }
+    await dispatch(fetchCurrentUser());
   };
   const doCover = async (f) => {
     const r = await dispatch(updateCover(f));
-    if (r.meta.requestStatus === "fulfilled") toast.success("Cover updated");
+    if (r.meta.requestStatus === "fulfilled"){
+      await dispatch(fetchCurrentUser());
+      toast.success("CoverImage updated");
+    }
   };
 
   return (
     <div className="max-w-3xl mx-auto space-y-8">
       <h1 className="font-display text-3xl font-bold">Profile settings</h1>
-      <section className="card p-6 flex items-center gap-6">
-        <img
-          src={user.avatar}
-          className="w-20 h-20 rounded-full object-cover"
-          alt=""
-        />
-        <div className="space-y-2">
-          <label className="btn-ghost inline-flex cursor-pointer">
-            Change avatar
+      <section className="card overflow-hidden p-0">
+        {/* Cover */}
+
+        <div className="relative h-52 w-full bg-zinc-800">
+          <img
+            src={
+              user.coverImage ||
+              "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?w=1600"
+            }
+            alt="Cover"
+            className="h-full w-full object-cover"
+          />
+
+          <label className="absolute right-4 top-4 cursor-pointer rounded-lg bg-black/70 px-4 py-2 text-sm text-white backdrop-blur hover:bg-black">
+            Change Cover
             <input
               type="file"
-              className="hidden"
               accept="image/*"
-              onChange={(e) =>
-                e.target.files?.[0] && doAvatar(e.target.files[0])
-              }
-            />
-          </label>
-          <label className="btn-ghost inline-flex cursor-pointer ml-2">
-            Change cover
-            <input
-              type="file"
               className="hidden"
-              accept="image/*"
               onChange={(e) =>
                 e.target.files?.[0] && doCover(e.target.files[0])
               }
             />
           </label>
+        </div>
+
+        {/* Avatar */}
+
+        <div className="relative -mt-12 flex items-end gap-5 px-6 pb-6">
+          <img
+            src={user.avatar}
+            alt=""
+            className="h-28 w-28 rounded-full border-4 border-zinc-900 object-cover"
+          />
+
+          <div>
+            <label className="btn-ghost cursor-pointer">
+              Change Avatar
+              <input
+                type="file"
+                className="hidden"
+                accept="image/*"
+                onChange={(e) =>
+                  e.target.files?.[0] && doAvatar(e.target.files[0])
+                }
+              />
+            </label>
+          </div>
         </div>
       </section>
       <form onSubmit={saveAccount} className="card p-6 space-y-4">

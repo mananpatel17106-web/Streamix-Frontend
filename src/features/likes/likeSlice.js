@@ -129,7 +129,6 @@ const likeSlice = createSlice({
         state.likedVideoIds = videos
           .filter((item) => item.video?._id)
           .map((item) => item.video._id.toString());
-        console.log(action.payload);
       })
       .addCase(fetchLikedVideos.rejected, (state, action) => {
         state.status = "idle";
