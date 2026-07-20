@@ -215,11 +215,11 @@ export default function Watch() {
           />
         </div>
 
-        <h1 className="mt-5 text-2xl font-bold leading-snug text-white">
+        <h1 className="mt-4 text-xl font-bold leading-snug text-white sm:text-2xl">
           {current.title}
         </h1>
 
-        <div className="mt-5 flex flex-col gap-5 xl:flex-row xl:items-center xl:justify-between">
+        <div className="mt-5 flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
           <Link
             to={`/c/${current.owner?.username}`}
             className="flex items-center gap-4">
@@ -250,7 +250,7 @@ export default function Watch() {
             </div>
           </Link>
 
-          <div className="flex flex-wrap gap-3">
+          <div className="grid grid-cols-2 gap-3 sm:flex sm:flex-wrap">
             {isOwnChannel ? (
               <Link
                 to={`/studio/videos/${current._id}`}
@@ -260,7 +260,7 @@ export default function Watch() {
             ) : (
               <button
                 onClick={sub}
-                className={`flex items-center gap-2 rounded-full px-5 py-2.5 font-medium transition ${
+                className={`flex items-center gap-2 rounded-full px-4 py-2.5 font-medium transition ${
                   subscribed
                     ? "border border-white/10 bg-neutral-800 hover:bg-neutral-700"
                     : "bg-red-600 hover:bg-red-700"
@@ -271,7 +271,7 @@ export default function Watch() {
             )}
             <button
               onClick={like}
-              className={`flex items-center gap-2 rounded-full px-5 py-2.5 font-medium transition ${
+              className={`flex items-center gap-2 rounded-full px-4 py-2.5 font-medium transition ${
                 liked
                   ? "bg-red-600 text-white hover:bg-red-700"
                   : "border border-white/10 bg-neutral-900 text-white hover:bg-neutral-800"
@@ -294,21 +294,21 @@ export default function Watch() {
 
                 setPlaylistOpen(true);
               }}
-              className="flex items-center gap-2 rounded-full border border-white/10 bg-neutral-900 px-5 py-2.5 text-white transition hover:bg-neutral-800">
+              className="flex items-center gap-2 rounded-full border border-white/10 bg-neutral-900 px-4 py-2.5 text-white transition hover:bg-neutral-800">
               <BookmarkPlus size={18} />
               Save
             </button>
 
             <button
               onClick={share}
-              className="flex items-center gap-2 rounded-full border border-white/10 bg-neutral-900 px-5 py-2.5 text-white transition hover:bg-neutral-800">
+              className="flex items-center gap-2 rounded-full border border-white/10 bg-neutral-900 px-4 py-2.5 text-white transition hover:bg-neutral-800">
               <Share2 size={18} />
               Share
             </button>
           </div>
         </div>
 
-        <div className="mt-6 rounded-2xl border border-white/10 bg-neutral-900 p-5">
+        <div className="mt-6 rounded-2xl border border-white/10 bg-neutral-900 p-4 sm:p-5">
           <div className="mb-3 flex flex-wrap items-center gap-3 text-sm text-neutral-400">
             <span>
               <strong>{formatViews(current.views)}</strong> views
@@ -355,7 +355,7 @@ export default function Watch() {
             {commentCount.toLocaleString()} Comments
           </h2>
           {user && (
-            <form onSubmit={submitComment} className="mb-8 flex gap-3">
+            <form onSubmit={submitComment} className="mb-8 flex items-start gap-3">
               <img
                 src={user.avatar}
                 alt={user.username}
@@ -444,7 +444,7 @@ export default function Watch() {
           </span>
         </div>
 
-        <div className="space-y-5">
+        <div className="mt-5 space-y-4">
           {recommendedVideos.map((video) => (
             <VideoCard key={video._id} video={video} />
           ))}

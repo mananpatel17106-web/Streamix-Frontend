@@ -29,6 +29,7 @@ import {
   fetchNotifications,
   markNotificationAsRead,
   markAllNotificationsAsRead,
+  clearAllNotifications
 } from "../features/notifications/notificationSlice";
 
 import { timeAgo } from "../utils/timeAgo";
@@ -299,10 +300,10 @@ export default function Navbar({ onMenu }) {
                         <h3 className="font-semibold">Notifications</h3>
 
                         <button
-                          onClick={() => dispatch(markAllNotificationsAsRead())}
+                          onClick={() => dispatch(clearAllNotifications())}
                           className="flex items-center gap-2 text-sm text-rose-400 hover:text-rose-300">
                           <CheckCheck size={15} />
-                          Mark all read
+                          Clear All
                         </button>
                       </div>
 

@@ -8,11 +8,11 @@ import {
   History,
   ListVideo,
   LayoutDashboard,
-  FolderOpen,
   Settings,
   CircleHelp,
   MessageSquare,
   X,
+  Compass
 } from "lucide-react";
 
 const navItem = ({ isActive }) =>
@@ -30,23 +30,26 @@ export default function Sidebar({ open, onClose }) {
 
   return (
     <>
-      <aside
-        className="
-fixed
-top-16
-left-0
-z-40
-h-[calc(100vh-4rem)]
-w-[270px]
-overflow-y-auto
-no-scrollbar
-border-r
-border-neutral-800
-bg-neutral-950
-transition-transform
-duration-300
-shadow-2xl
-">
+        <aside
+  className={`
+    fixed
+    top-16
+    left-0
+    z-40
+    h-[calc(100vh-4rem)]
+    w-[270px]
+    overflow-y-auto
+    no-scrollbar
+    border-r
+    border-neutral-800
+    bg-neutral-950
+    shadow-2xl
+    transition-transform
+    duration-300
+    ${open ? "translate-x-0" : "-translate-x-full"}
+    lg:translate-x-0
+  `}
+>
         {/* Mobile Header */}
         <div className="flex items-center justify-between p-4 lg:hidden">
           <h2 className="text-lg font-bold text-white">Menu</h2>
@@ -117,14 +120,9 @@ shadow-2xl
                 <span>Tweets</span>
               </NavLink>
 
-              <NavLink to="/your-videos" className={navItem}>
-                <FolderOpen size={19} strokeWidth={2.1} />
-                <span>Your Videos</span>
-              </NavLink>
-
               <NavLink to="/dashboard" className={navItem}>
                 <LayoutDashboard size={19} strokeWidth={2.1} />
-                <span>Dashboard</span>
+                <span>Studio</span>
               </NavLink>
 
               <div className="my-4 border-t border-neutral-800" />

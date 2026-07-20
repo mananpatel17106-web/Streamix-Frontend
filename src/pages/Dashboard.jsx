@@ -11,6 +11,9 @@ import {
 import DashboardVideoCard from "../components/dashboard/DashboardVideoCard";
 import DashboardSkeleton from "../components/dashboard/DashboardSkeleton";
 
+import { deleteVideo } from "../features/video/videoSlice";
+import toast from "react-hot-toast";
+
 export default function Dashboard() {
   const dispatch = useDispatch();
 
@@ -55,6 +58,21 @@ export default function Dashboard() {
 
     return list;
   }, [videos, search, sort, status]);
+
+  const handleDelete = async (videoId) => {
+    if (!window.confirm("Delete this video?")) return;
+
+    const result = await dispatch(deleteVideo(videoId));
+
+    if (result.meta.requestStatus === "fulfilled") {
+      toast.success("Video deleted");
+
+      dispatch(fetchChannelStats());
+      dispatch(fetchChannelVideos());
+    } else {
+      toast.error(result.payload || "Failed to delete video");
+    }
+  };
 
   return (
     <div className="space-y-8">
@@ -147,7 +165,11 @@ export default function Dashboard() {
         ) : (
           <div className="space-y-5">
             {filteredVideos.map((video) => (
-              <DashboardVideoCard key={video._id} video={video} />
+              <DashboardVideoCard
+                key={video._id}
+                video={video}
+                onDelete={handleDelete}
+              />
             ))}
           </div>
         )}

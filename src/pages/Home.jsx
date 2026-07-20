@@ -45,7 +45,7 @@ export default function Home() {
     <div className="space-y-10 pb-10">
       {/* Hero */}
       {!isSearching && !filter && (
-        <section className="relative overflow-hidden rounded-3xl border border-neutral-800 bg-gradient-to-br from-neutral-900 via-black to-neutral-950 px-8 py-10 md:px-12 md:py-12">
+        <section className="hidden lg:block  relative overflow-hidden rounded-3xl border border-neutral-800 bg-gradient-to-br from-neutral-900 via-black to-neutral-950 px-5 py-7 sm:px-8 md:px-12 md:py-12">
           <div className="absolute -right-32 top-0 h-96 w-96 rounded-full bg-rose-600/10 blur-[140px]" />
           <div className="absolute bottom-0 left-0 h-72 w-72 rounded-full bg-orange-500/10 blur-[120px]" />
 
@@ -57,7 +57,7 @@ export default function Home() {
                 Premium Streaming Platform
               </div>
 
-              <h1 className="mt-7 text-5xl font-black leading-tight md:text-6xl">
+              <h1 className="mt-7 text-3xl font-black leading-tight sm:text-4xl lg:text-5xl xl:text-6xl">
                 Discover.
                 <br />
                 Watch.
@@ -67,7 +67,7 @@ export default function Home() {
                 </span>
               </h1>
 
-              <p className="mt-6 max-w-xl text-lg leading-8 text-neutral-400">
+              <p className="mt-5 max-w-xl text-sm leading-6 text-neutral-400 sm:text-base lg:text-lg lg:leading-8">
                 Watch millions of videos, discover talented creators, and enjoy
                 high-quality content across every category.
               </p>
@@ -77,7 +77,7 @@ export default function Home() {
                   onClick={() =>
                     window.scrollTo({ top: 520, behavior: "smooth" })
                   }
-                  className="rounded-xl bg-rose-600 px-7 py-3 font-semibold text-white transition-all duration-200 hover:bg-rose-500 hover:scale-[1.03]">
+                  className="w-full sm:w-auto rounded-xl bg-rose-600 px-6 py-3 font-semibold text-white transition-all duration-200 hover:bg-rose-500 hover:scale-[1.03]">
                   ▶ Start Watching
                 </button>
 
@@ -87,7 +87,7 @@ export default function Home() {
                       .getElementById("categories")
                       ?.scrollIntoView({ behavior: "smooth" })
                   }
-                  className="rounded-xl border border-neutral-700 bg-neutral-900 px-7 py-3 font-semibold transition hover:border-neutral-500 hover:bg-neutral-800">
+                  className="w-full sm:w-auto rounded-xl border border-neutral-700 bg-neutral-900 px-6 py-3 font-semibold transition hover:border-neutral-500 hover:bg-neutral-800">
                   📺 Browse Categories
                 </button>
               </div>
@@ -145,7 +145,7 @@ export default function Home() {
       {!isSearching && (
         <div
           id="categories"
-          className="flex gap-3 overflow-x-auto pb-2 no-scrollbar">
+          className="flex w-full gap-3 overflow-x-auto overflow-y-hidden whitespace-nowrap pb-2 no-scrollbar touch-pan-x">
           {categories.map((category) => (
             <button
               key={category}
@@ -158,7 +158,7 @@ export default function Home() {
                       },
                 )
               }
-              className={`shrink-0 rounded-full px-5 py-2.5 text-sm font-medium transition-all duration-200 ${
+              className={`flex-none rounded-full px-5 py-2.5 text-sm font-medium transition-all duration-200 ${
                 (category === "All" && !filter) ||
                 filter === category.toLowerCase()
                   ? "bg-white text-black shadow-lg"
@@ -286,12 +286,15 @@ export default function Home() {
 
           <div
             className="
-              grid
-              gap-6
-              sm:grid-cols-2
-              xl:grid-cols-3
-              2xl:grid-cols-4
-            ">
+  grid
+  grid-cols-1
+  gap-4
+  sm:grid-cols-2
+  sm:gap-5
+  lg:grid-cols-3
+  lg:gap-6
+  2xl:grid-cols-4
+">
             {videos.map((video) => (
               <VideoCard key={video._id} video={video} />
             ))}

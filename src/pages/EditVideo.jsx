@@ -4,6 +4,8 @@ import { useDispatch, useSelector } from "react-redux";
 import {
   fetchVideoById,
   updateVideo,
+  deleteVideo,
+  togglePublish,
 } from "../features/video/videoSlice";
 
 import Loader from "../components/Loader";
@@ -16,6 +18,7 @@ export default function EditVideo() {
   const { current } = useSelector((s) => s.videos);
   const [form, setForm] = useState({ title: "", description: "" });
   const [thumbnail, setThumbnail] = useState(null);
+  const [saving, setSaving] = useState(false);
 
   useEffect(() => {
     dispatch(fetchVideoById(videoId));
@@ -36,10 +39,14 @@ export default function EditVideo() {
     fd.append("title", form.title);
     fd.append("description", form.description);
     if (thumbnail) fd.append("thumbnail", thumbnail);
+
+    setSaving(true);
     const r = await dispatch(updateVideo({ videoId, formData: fd }));
+    setSaving(false);
+
     if (r.meta.requestStatus === "fulfilled") {
-      toast.success("Saved");
-      navigate("/dashboard");
+      toast.success("Video updated successfully");
+      navigate("/dashboard", { replace: true });
     }
   };
 
@@ -57,8 +64,14 @@ export default function EditVideo() {
 
   return (
     <div className="max-w-2xl mx-auto">
-      <h1 className="font-display text-2xl font-bold">Edit video</h1>
-      <form onSubmit={save} className="mt-6 card p-6 space-y-4">
+      <div className="mb-8">
+        <h1 className="text-4xl font-bold text-white">Edit Video</h1>
+
+        <p className="mt-2 text-zinc-400">Update your video's information.</p>
+      </div>
+      <form
+        onSubmit={save}
+        className="space-y-6 rounded-2xl border border-white/10 bg-zinc-900 p-8">
         <label className="block">
           <span className="label">Title</span>
           <input
@@ -77,23 +90,55 @@ export default function EditVideo() {
           />
         </label>
         <label className="block">
-          <span className="label">New thumbnail (optional)</span>
+          <span className="label mb-3 block">Thumbnail</span>
+
+          <div className="overflow-hidden rounded-xl border border-white/10 bg-zinc-900">
+            <img
+              src={
+                thumbnail ? URL.createObjectURL(thumbnail) : current.thumbnail
+              }
+              alt="Thumbnail Preview"
+              className="aspect-video w-full object-cover"
+            />
+          </div>
+
           <input
             type="file"
             accept="image/*"
+            className="mt-4 block w-full rounded-lg border border-white/10 bg-zinc-900 p-3 text-sm text-white"
             onChange={(e) => setThumbnail(e.target.files?.[0] || null)}
           />
         </label>
-        <div className="flex flex-wrap gap-2">
-          <button className="btn-primary">Save</button>
-          <button type="button" onClick={toggle} className="btn-ghost">
-            Toggle publish
+        <div className="flex flex-wrap justify-end gap-3 pt-4">
+          <button
+            type="button"
+            onClick={() => navigate("/dashboard")}
+            className="rounded-lg border border-white/10 px-5 py-2 text-white hover:bg-zinc-800">
+            Cancel
           </button>
+
+          <button
+            type="button"
+            onClick={toggle}
+            className="rounded-lg bg-yellow-600 px-5 py-2 text-white hover:bg-yellow-500">
+            {current.isPublished ? "Make Private" : "Publish"}
+          </button>
+
           <button
             type="button"
             onClick={remove}
-            className="btn-outline text-primary-soft border-primary/40">
+            className="rounded-lg bg-red-600 px-5 py-2 text-white hover:bg-red-500">
             Delete
+          </button>
+
+          <button className="rounded-lg bg-primary px-6 py-2 text-white hover:opacity-90">
+            Save Changes
+          </button>
+
+          <button
+            disabled={saving}
+            className="rounded-lg bg-primary px-6 py-2 text-white">
+            {saving ? "Saving..." : "Save Changes"}
           </button>
         </div>
       </form>

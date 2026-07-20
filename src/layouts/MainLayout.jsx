@@ -21,32 +21,28 @@ const MainLayout = () => {
   return (
     <div className="min-h-screen bg-[#09090B] text-white">
       {/* Mobile Overlay */}
-
+{/* 
       {sidebarOpen && (
         <div
           onClick={() => setSidebarOpen(false)}
           className="fixed inset-0 z-40 bg-black/60 backdrop-blur-sm lg:hidden"
         />
-      )}
+      )} */}
 
       <div className="flex">
         {/* Sidebar */}
 
-        <Sidebar
-          sidebarOpen={sidebarOpen}
-          setSidebarOpen={setSidebarOpen}
-        />
+        <Sidebar open={sidebarOpen} onClose={() => setSidebarOpen(false)} />
 
         {/* Content */}
 
         <div className="flex min-h-screen flex-1 flex-col">
           <Navbar
             onSearch={handleSearch}
-            sidebarOpen={sidebarOpen}
-            setSidebarOpen={setSidebarOpen}
+            onMenu={() => setSidebarOpen((prev) => !prev)}
           />
 
-          <main className="flex-1 overflow-x-hidden p-4 md:p-6 lg:p-8">
+          <main className="flex-1 p-4 md:p-6 lg:p-8">
             <Outlet />
           </main>
         </div>

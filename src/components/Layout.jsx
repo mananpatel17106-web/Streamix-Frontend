@@ -9,8 +9,8 @@ export default function Layout() {
   const location = useLocation();
 
   useEffect(() => {
-    setSidebarOpen(false);
-  }, [location.pathname]);
+  setSidebarOpen(false);
+}, [location.pathname, location.search]);
 
   useEffect(() => {
     document.body.style.overflow = sidebarOpen ? "hidden" : "auto";
