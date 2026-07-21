@@ -5,6 +5,7 @@ import { Loader2, UploadCloud } from "lucide-react";
 import toast from "react-hot-toast";
 
 import { publishVideo } from "../features/video/videoSlice";
+const [category, setCategory] = useState("Programming");
 
 export default function Upload() {
   const dispatch = useDispatch();
@@ -128,6 +129,7 @@ export default function Upload() {
 
     formData.append("title", title);
     formData.append("description", description);
+    formData.append("category", category);
     formData.append("videoFile", videoFile);
     formData.append("thumbnail", thumbnail);
     formData.append("isPublished", isPublished);
@@ -194,6 +196,25 @@ export default function Upload() {
           {descriptionError && (
             <p className="mt-2 text-sm text-red-500">{descriptionError}</p>
           )}
+        </div>
+
+        <div>
+          <label className="label">Category</label>
+
+          <select
+            value={category}
+            onChange={(e) => setCategory(e.target.value)}
+            className="input">
+            <option value="Programming">Programming</option>
+            <option value="AI">AI</option>
+            <option value="Gaming">Gaming</option>
+            <option value="Music">Music</option>
+            <option value="Education">Education</option>
+            <option value="News">News</option>
+            <option value="Sports">Sports</option>
+            <option value="Movies">Movies</option>
+            <option value="Live">Live</option>
+          </select>
         </div>
 
         <div>

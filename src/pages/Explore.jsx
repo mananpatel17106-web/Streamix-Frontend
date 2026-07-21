@@ -12,8 +12,8 @@ const categories = [
   "All",
   "Programming",
   "AI",
-  "Music",
   "Gaming",
+  "Music",
   "Education",
   "News",
   "Sports",
@@ -58,20 +58,14 @@ export default function Explore() {
       fetchVideos({
         page: 1,
         limit,
-      })
+        category: activeCategory === "All" ? undefined : activeCategory,
+      }),
     );
-  }, [dispatch, limit]);
+  }, [dispatch, limit, activeCategory]);
 
   const filteredVideos = useMemo(() => {
     let list = [...videos];
 
-    if (activeCategory !== "All") {
-      list = list.filter((video) => {
-        const text = `${video.category || ""} ${video.title || ""}`.toLowerCase();
-
-        return text.includes(activeCategory.toLowerCase());
-      });
-    }
 
     if (search.trim()) {
       const q = search.toLowerCase();
@@ -82,10 +76,7 @@ export default function Explore() {
           video.owner?.username?.toLowerCase() ||
           "";
 
-        return (
-          video.title?.toLowerCase().includes(q) ||
-          owner.includes(q)
-        );
+        return video.title?.toLowerCase().includes(q) || owner.includes(q);
       });
     }
 
@@ -95,17 +86,11 @@ export default function Explore() {
         break;
 
       case "title":
-        list.sort((a, b) =>
-          (a.title || "").localeCompare(b.title || "")
-        );
+        list.sort((a, b) => (a.title || "").localeCompare(b.title || ""));
         break;
 
       default:
-        list.sort(
-          (a, b) =>
-            new Date(b.createdAt) -
-            new Date(a.createdAt)
-        );
+        list.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
     }
 
     return list;
@@ -113,63 +98,40 @@ export default function Explore() {
 
   return (
     <div className="space-y-8">
-
       {/* Header */}
 
       <div className="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
-
         <div className="flex items-center gap-4">
-
           <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-red-600/15 border border-red-500/20">
-
-            <Compass
-              size={30}
-              className="text-red-500"
-            />
-
+            <Compass size={30} className="text-red-500" />
           </div>
 
           <div>
-
-            <h1 className="text-3xl font-bold text-white">
-              Explore
-            </h1>
+            <h1 className="text-3xl font-bold text-white">Explore</h1>
 
             <p className="mt-1 text-sm text-neutral-400">
               Discover videos from creators around the world.
             </p>
-
           </div>
-
         </div>
 
         <div className="flex items-center gap-3 rounded-xl border border-white/10 bg-neutral-900 px-4 py-3">
-
-          <SlidersHorizontal
-            size={18}
-            className="text-neutral-400"
-          />
+          <SlidersHorizontal size={18} className="text-neutral-400" />
 
           <select
             value={sort}
-            onChange={(e) =>
-              setSort(e.target.value)
-            }
-            className="bg-transparent text-sm text-white outline-none"
-          >
+            onChange={(e) => setSort(e.target.value)}
+            className="bg-transparent text-sm text-white outline-none">
             {sortOptions.map((item) => (
               <option
                 key={item.value}
                 value={item.value}
-                className="bg-neutral-900"
-              >
+                className="bg-neutral-900">
                 {item.label}
               </option>
             ))}
           </select>
-
         </div>
-
       </div>
 
       <CategoryBar
@@ -181,7 +143,6 @@ export default function Explore() {
       />
 
       <div className="flex items-center justify-between">
-
         <p className="text-sm text-neutral-400">
           {filteredVideos.length} videos found
         </p>
@@ -189,44 +150,31 @@ export default function Explore() {
         <p className="text-xs text-neutral-500">
           Page {page} of {totalPages}
         </p>
-
       </div>
 
       {loading ? (
         <ExploreSkeleton />
       ) : filteredVideos.length ? (
-        <ExploreGrid
-          videos={filteredVideos}
-        />
+        <ExploreGrid videos={filteredVideos} />
       ) : (
         <div className="rounded-2xl border border-dashed border-white/10 py-24 text-center">
-
-          <h2 className="text-xl font-semibold text-white">
-            No videos found
-          </h2>
+          <h2 className="text-xl font-semibold text-white">No videos found</h2>
 
           <p className="mt-2 text-sm text-neutral-500">
             Try another category or search.
           </p>
-
         </div>
       )}
 
       {videos.length >= limit && (
         <div className="flex justify-center">
-
           <button
-            onClick={() =>
-              setLimit((prev) => prev + 24)
-            }
-            className="rounded-xl bg-red-600 px-6 py-3 font-medium text-white transition hover:bg-red-700"
-          >
+            onClick={() => setLimit((prev) => prev + 24)}
+            className="rounded-xl bg-red-600 px-6 py-3 font-medium text-white transition hover:bg-red-700">
             Load More
           </button>
-
         </div>
       )}
-
     </div>
   );
 }
