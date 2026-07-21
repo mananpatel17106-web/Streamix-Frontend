@@ -17,17 +17,12 @@ import {
   addComment,
   deleteComment,
 } from "../features/comment/commentSlice";
-import {
-  toggleVideoLike,
-  fetchLikedVideos,
-} from "../features/likes/likeSlice";
+import { toggleVideoLike, fetchLikedVideos } from "../features/likes/likeSlice";
 import {
   toggleSubscription,
   fetchSubscribedChannels,
 } from "../features/subscription/subscriptionSlice";
-import {
-  addToHistory,
-} from "../features/auth/authSlice";
+import { addToHistory } from "../features/auth/authSlice";
 
 export default function Watch() {
   const { videoId } = useParams();
@@ -48,7 +43,7 @@ export default function Watch() {
 
   const [commentCount, setCommentCount] = useState(0);
 
-  const [subbed, setSubbed] = useState(false);
+  // const [subbed, setSubbed] = useState(false);
 
   const [showFullDescription, setShowFullDescription] = useState(false);
 
@@ -60,9 +55,11 @@ export default function Watch() {
     (state) => state.subscriptions.subscribedChannelIds,
   );
 
-  const subscribed = current?.owner?._id
-    ? subscribedChannelIds.includes(current.owner._id)
-    : false;
+  const subscribed =
+    current?.owner?.isSubscribed ??
+    (current?.owner?._id
+      ? subscribedChannelIds.includes(current.owner._id)
+      : false);
 
   const isOwnChannel = user?._id === current?.owner?._id;
 
@@ -83,11 +80,11 @@ export default function Watch() {
     dispatch(addToHistory(current._id));
   }, [dispatch, user, current?._id]);
 
-  useEffect(() => {
-    if (!current?.owner) return;
+  // useEffect(() => {
+  //   if (!current?.owner) return;
 
-    setSubbed(current.owner.isSubscribed || current.owner.subscribed || false);
-  }, [current]);
+  //   setSubbed(current.owner.isSubscribed || current.owner.subscribed || false);
+  // }, [current]);
 
   useEffect(() => {
     if (current?.owner?.subscribersCount !== undefined) {
@@ -122,25 +119,24 @@ export default function Watch() {
   };
 
   const sub = async () => {
-    if (!user) {
-      toast.error("Sign in first");
-      return;
-    }
+  if (!user) {
+    toast.error("Sign in first");
+    return;
+  }
 
-    if (!current?.owner?._id) return;
+  if (!current?.owner?._id) return;
 
-    const result = await dispatch(toggleSubscription(current.owner._id));
+  const result = await dispatch(toggleSubscription(current.owner._id));
 
-    if (toggleSubscription.fulfilled.match(result)) {
-      if (subscribed) {
-        setSubscriberCount((prev) => Math.max(0, prev - 1));
-      } else {
-        setSubscriberCount((prev) => prev + 1);
-      }
-    } else {
-      toast.error("Unable to subscribe");
-    }
-  };
+  if (toggleSubscription.fulfilled.match(result)) {
+    await Promise.all([
+      dispatch(fetchSubscribedChannels(user._id)),
+      dispatch(fetchVideoById(videoId)),
+    ]);
+  } else {
+    toast.error("Unable to subscribe");
+  }
+};
 
   const submitComment = async (e) => {
     e.preventDefault();

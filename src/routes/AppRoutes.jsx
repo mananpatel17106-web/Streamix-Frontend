@@ -23,8 +23,8 @@ import LikedVideos from "../pages/LikedVideos";
 import Channel from "../pages/Channel";
 import EditVideo from "../pages/EditVideo";
 
-
 const AppRoutes = () => {
+  
   return (
     <Routes>
       {/* Guest */}
@@ -64,7 +64,7 @@ const AppRoutes = () => {
           <Route path="/channel/:username" element={<Channel />} />
 
           <Route path="/edit-video/:videoId" element={<EditVideo />} />
-          
+
         </Route>
       </Route>
 

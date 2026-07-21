@@ -12,6 +12,7 @@ import Loader from "../components/Loader";
 import toast from "react-hot-toast";
 
 export default function EditVideo() {
+  
   const { videoId } = useParams();
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -61,6 +62,7 @@ export default function EditVideo() {
     await dispatch(togglePublish(videoId));
     toast.success("Toggled");
   };
+
 
   return (
     <div className="max-w-2xl mx-auto">

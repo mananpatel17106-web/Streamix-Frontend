@@ -121,6 +121,8 @@ const slice = createSlice({
       .addCase(removeVideoFromPlaylist.fulfilled, (state, action) => {
         const updatedPlaylist = action.payload;
 
+        state.current = updatedPlaylist;
+
         const index = state.list.findIndex(
           (playlist) => playlist._id === updatedPlaylist._id,
         );

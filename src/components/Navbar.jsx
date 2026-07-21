@@ -29,7 +29,7 @@ import {
   fetchNotifications,
   markNotificationAsRead,
   markAllNotificationsAsRead,
-  clearAllNotifications
+  clearAllNotifications,
 } from "../features/notifications/notificationSlice";
 
 import { timeAgo } from "../utils/timeAgo";
@@ -436,7 +436,7 @@ export default function Navbar({ onMenu }) {
                         </Link>
 
                         <Link
-                          to={`/channel/${user.username}`}
+                          to={`/c/${user.username}`}
                           onClick={() => setShowProfile(false)}
                           className="flex items-center gap-3 rounded-xl px-4 py-3 hover:bg-neutral-900">
                           <Tv size={18} />

@@ -25,6 +25,7 @@ import Tweets from "./pages/Tweets";
 import NotFound from "./pages/NotFound";
 
 export default function App() {
+  
   const dispatch = useDispatch();
   const token = useSelector((s) => s.auth.accessToken);
 
