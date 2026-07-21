@@ -11,15 +11,58 @@ export default function Login() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const location = useLocation();
-  const { status, error } = useSelector((s) => s.auth);
+  const { status } = useSelector((s) => s.auth);
   const loading = status === "loading";
+  const [identifierError, setIdentifierError] = useState("");
+  const [passwordError, setPasswordError] = useState("");
+  const [serverError, setServerError] = useState("");
 
   const submit = async (e) => {
+    const username = identifier.trim();
+    const pass = password.trim();
+
+    if (!username) {
+      setIdentifierError("Username or email is required");
+      return;
+    }
+
+    if (!pass) {
+      setPasswordError("Password is required");
+      return;
+    }
     e.preventDefault();
-    const res = await dispatch(loginUser({ identifier, password }));
-    if (res.meta.requestStatus === "fulfilled") {
+
+    setIdentifierError("");
+    setPasswordError("");
+    setServerError("");
+
+    const res = await dispatch(
+      loginUser({
+        identifier: username,
+        password: pass,
+      }),
+    );
+
+    if (loginUser.fulfilled.match(res)) {
       toast.success("Welcome back!");
-      navigate(location.state?.from?.pathname || "/", { replace: true });
+      navigate(location.state?.from?.pathname || "/", {
+        replace: true,
+      });
+      return;
+    }
+
+    const message = res.payload || "Login failed";
+
+    if (
+      message.toLowerCase().includes("username") ||
+      message.toLowerCase().includes("email") ||
+      message.toLowerCase().includes("does not exist")
+    ) {
+      setIdentifierError(message);
+    } else if (message.toLowerCase().includes("password")) {
+      setPasswordError(message);
+    } else {
+      setServerError(message);
     }
   };
 
@@ -53,10 +96,19 @@ export default function Login() {
                 <input
                   required
                   value={identifier}
-                  onChange={(e) => setIdentifier(e.target.value)}
-                  className="input"
+                  onChange={(e) => {
+                    setIdentifier(e.target.value);
+                    setIdentifierError("");
+                    setServerError("");
+                  }}
+                  className={`input ${
+                    identifierError ? "border-red-500 focus:border-red-500" : ""
+                  }`}
                   placeholder="you@example.com"
                 />
+                {identifierError && (
+                  <p className="mt-1 text-sm text-red-500">{identifierError}</p>
+                )}
               </label>
               <label className="block">
                 <span className="label">Password</span>
@@ -64,19 +116,35 @@ export default function Login() {
                   required
                   type="password"
                   value={password}
-                  onChange={(e) => setPassword(e.target.value)}
+                  onChange={(e) => {
+                    setPassword(e.target.value);
+                    setPasswordError("");
+                    setServerError("");
+                  }}
                   className="input"
                   placeholder="••••••••"
                 />
+                {passwordError && (
+                  <p className="mt-1 text-sm text-red-500">{passwordError}</p>
+                )}
               </label>
-              {error && (
-                <div className="rounded-lg border border-primary/40 bg-primary/10 px-3 py-2 text-xs text-primary-soft">
-                  {error}
+              {serverError && (
+                <div className="rounded-xl border border-red-500/30 bg-red-500/10 px-4 py-3 text-sm text-red-400">
+                  {serverError}
                 </div>
               )}
-              <button disabled={loading} className="btn-primary w-full h-11">
-                {loading && <Loader2 className="w-4 h-4 animate-spin" />} Sign
-                in
+              <button
+                type="submit"
+                disabled={loading}
+                className="btn-primary w-full h-11 disabled:opacity-60 disabled:cursor-not-allowed">
+                {loading ? (
+                  <>
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                    Signing in...
+                  </>
+                ) : (
+                  "Sign in"
+                )}
               </button>
             </form>
             <div className="mt-6 text-center text-sm text-muted">

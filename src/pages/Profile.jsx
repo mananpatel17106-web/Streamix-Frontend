@@ -69,7 +69,7 @@ export default function Profile() {
     await dispatch(fetchCurrentUser());
   };
   const doCover = async (f) => {
-    const r = await dispatch(updateCover(f));
+    const r = await dispatch(updateCoverImage(f));
     if (r.meta.requestStatus === "fulfilled"){
       await dispatch(fetchCurrentUser());
       toast.success("CoverImage updated");
