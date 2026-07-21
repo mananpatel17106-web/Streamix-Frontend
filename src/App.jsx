@@ -23,6 +23,8 @@ import PlaylistPage from "./pages/PlaylistPage";
 import Subscriptions from "./pages/Subscriptions";
 import Tweets from "./pages/Tweets";
 import NotFound from "./pages/NotFound";
+import HelpFeedback from "./pages/HelpFeedback";
+import Settings from "./pages/Settings";
 
 export default function App() {
   
@@ -68,6 +70,8 @@ export default function App() {
         </Route>
 
         <Route path="/404" element={<Navigate to="/" replace />} />
+        <Route path="/help-feedback" element={<HelpFeedback />} />
+        <Route path="/settings" element={<Settings />} />
       </Routes>
     </>
   );

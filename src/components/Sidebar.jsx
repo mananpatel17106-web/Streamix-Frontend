@@ -12,7 +12,7 @@ import {
   CircleHelp,
   MessageSquare,
   X,
-  Compass
+  Compass,
 } from "lucide-react";
 
 const navItem = ({ isActive }) =>
@@ -30,8 +30,8 @@ export default function Sidebar({ open, onClose }) {
 
   return (
     <>
-        <aside
-  className={`
+      <aside
+        className={`
     fixed
     top-16
     left-0
@@ -48,8 +48,7 @@ export default function Sidebar({ open, onClose }) {
     duration-300
     ${open ? "translate-x-0" : "-translate-x-full"}
     lg:translate-x-0
-  `}
->
+  `}>
         {/* Mobile Header */}
         <div className="flex items-center justify-between p-4 lg:hidden">
           <h2 className="text-lg font-bold text-white">Menu</h2>
@@ -132,7 +131,7 @@ export default function Sidebar({ open, onClose }) {
                 <span>Settings</span>
               </NavLink>
 
-              <NavLink to="/help" className={navItem}>
+              <NavLink to="/help-feedback" className={navItem}>
                 <CircleHelp size={19} strokeWidth={2.1} />
                 <span>Help & Feedback</span>
               </NavLink>
