@@ -1,5 +1,6 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { api, apiErr } from "../../services/api";
+import { toggleSubscription } from "../subscription/subscriptionSlice";
 
 export const fetchVideos = createAsyncThunk(
   "videos/list",
@@ -231,6 +232,15 @@ const videoSlice = createSlice({
       .addCase(togglePublish.rejected, (state, action) => {
         state.status = "idle";
         state.error = action.payload;
+      })
+
+      .addCase(toggleSubscription.fulfilled, (state, action) => {
+        if (!state.current?.owner) return;
+
+        if (state.current.owner._id !== action.meta.arg) return;
+
+        state.current.owner.isSubscribed = action.payload.subscribed;
+        state.current.owner.subscribersCount = action.payload.subscribersCount;
       });
   },
 });

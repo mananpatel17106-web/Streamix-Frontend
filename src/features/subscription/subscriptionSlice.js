@@ -92,9 +92,8 @@ const slice = createSlice({
       state.status = "idle";
 
       const channelId = action.meta.arg;
-      const { subscribed, subscribersCount } = action.payload || {};
+      const { subscribed } = action.payload || {};
 
-      // Update subscribed ids
       if (subscribed) {
         if (!state.subscribedChannelIds.includes(channelId)) {
           state.subscribedChannelIds.push(channelId);
@@ -104,27 +103,6 @@ const slice = createSlice({
           (id) => id !== channelId,
         );
       }
-      // Update subscriptions page instantly
-      state.channels = state.channels
-        .map((item) => {
-          const ch = item.channel || item;
-
-          if (ch._id !== channelId) return item;
-
-          return {
-            ...item,
-            channel: {
-              ...ch,
-              subscribersCount,
-            },
-          };
-        })
-        .filter((item) => {
-          const ch = item.channel || item;
-
-          // Unsubscribe thai gaya pachi card remove thai jashe
-          return state.subscribedChannelIds.includes(ch._id);
-        });
     });
 
     b.addCase(toggleSubscription.rejected, (state, action) => {

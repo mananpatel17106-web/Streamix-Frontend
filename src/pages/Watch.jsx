@@ -61,6 +61,13 @@ export default function Watch() {
       ? subscribedChannelIds.includes(current.owner._id)
       : false);
 
+  console.log({
+    isSubscribed: current?.owner?.isSubscribed,
+    subscribedIds: subscribedChannelIds,
+    ownerId: current?.owner?._id,
+    finalSubscribed: subscribed,
+  });
+
   const isOwnChannel = user?._id === current?.owner?._id;
 
   useEffect(() => {
@@ -126,14 +133,9 @@ export default function Watch() {
 
   if (!current?.owner?._id) return;
 
-  const result = await dispatch(toggleSubscription(current.owner._id));
+  const res = await dispatch(toggleSubscription(current.owner._id));
 
-  if (toggleSubscription.fulfilled.match(result)) {
-    await Promise.all([
-      dispatch(fetchSubscribedChannels(user._id)),
-      dispatch(fetchVideoById(videoId)),
-    ]);
-  } else {
+  if (res.meta.requestStatus !== "fulfilled") {
     toast.error("Unable to subscribe");
   }
 };
