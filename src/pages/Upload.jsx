@@ -5,11 +5,13 @@ import { Loader2, UploadCloud } from "lucide-react";
 import toast from "react-hot-toast";
 
 import { publishVideo } from "../features/video/videoSlice";
-const [category, setCategory] = useState("Programming");
+
 
 export default function Upload() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
+
+  const [category, setCategory] = useState("Programming");
 
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");

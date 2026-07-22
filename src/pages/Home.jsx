@@ -9,15 +9,16 @@ import Loader from "../components/Loader";
 
 const categories = [
   "All",
-  "Music",
+  "Programming",
+  "AI",
   "Gaming",
-  "Learn",
-  "Sports",
+  "Music",
+  "Education",
   "News",
-  "Tech",
+  "Sports",
+  "Movies",
   "Live",
 ];
-
 export default function Home() {
   const dispatch = useDispatch();
 
@@ -33,6 +34,7 @@ export default function Home() {
     dispatch(
       fetchVideos({
         query,
+        category: filter || undefined,
         sortBy: filter === "trending" ? "views" : "createdAt",
         sortType: "desc",
       }),
@@ -154,13 +156,13 @@ export default function Home() {
                   category === "All"
                     ? {}
                     : {
-                        filter: category.toLowerCase(),
+                        filter: category,
                       },
                 )
               }
               className={`flex-none rounded-full px-5 py-2.5 text-sm font-medium transition-all duration-200 ${
                 (category === "All" && !filter) ||
-                filter === category.toLowerCase()
+                filter === category
                   ? "bg-white text-black shadow-lg"
                   : "bg-neutral-900 text-neutral-300 hover:bg-neutral-800 hover:text-white"
               }`}>

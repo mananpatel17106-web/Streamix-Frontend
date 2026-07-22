@@ -422,7 +422,7 @@ export default function Navbar({ onMenu }) {
                         </p>
 
                         <div className="mt-3 inline-flex rounded-full bg-rose-600/15 px-3 py-1 text-xs font-medium text-rose-400">
-                          Premium Creator
+                          Creator
                         </div>
                       </div>
 
@@ -441,46 +441,6 @@ export default function Navbar({ onMenu }) {
                           className="flex items-center gap-3 rounded-xl px-4 py-3 hover:bg-neutral-900">
                           <Tv size={18} />
                           Your Channel
-                        </Link>
-
-                        <Link
-                          to="/dashboard"
-                          onClick={() => setShowProfile(false)}
-                          className="flex items-center gap-3 rounded-xl px-4 py-3 hover:bg-neutral-900">
-                          <ListVideo size={18} />
-                          Your Videos
-                        </Link>
-
-                        <Link
-                          to="/playlists"
-                          onClick={() => setShowProfile(false)}
-                          className="flex items-center gap-3 rounded-xl px-4 py-3 hover:bg-neutral-900">
-                          <ListVideo size={18} />
-                          Playlists
-                        </Link>
-
-                        <Link
-                          to="/liked"
-                          onClick={() => setShowProfile(false)}
-                          className="flex items-center gap-3 rounded-xl px-4 py-3 hover:bg-neutral-900">
-                          <Heart size={18} />
-                          Liked Videos
-                        </Link>
-
-                        <Link
-                          to="/history"
-                          onClick={() => setShowProfile(false)}
-                          className="flex items-center gap-3 rounded-xl px-4 py-3 hover:bg-neutral-900">
-                          <History size={18} />
-                          Watch History
-                        </Link>
-
-                        <Link
-                          to="/dashboard"
-                          onClick={() => setShowProfile(false)}
-                          className="flex items-center gap-3 rounded-xl px-4 py-3 hover:bg-neutral-900">
-                          <LayoutDashboard size={18} />
-                          Dashboard
                         </Link>
 
                         <Link
