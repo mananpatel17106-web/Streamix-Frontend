@@ -87,21 +87,22 @@ const slice = createSlice({
       state.status = "loading";
     });
     b.addCase(toggleSubscription.fulfilled, (state, action) => {
-      state.status = "idle";
+    state.status = "idle";
 
-      const channelId = action.meta.arg;
-      const { subscribed } = action.payload || {};
+    const channelId = action.meta.arg;
+    const { subscribed } = action.payload || {};
 
-      if (subscribed) {
+    if (subscribed) {
         if (!state.subscribedChannelIds.includes(channelId)) {
-          state.subscribedChannelIds.push(channelId);
+            state.subscribedChannelIds.push(channelId);
         }
-      } else {
-        state.subscribedChannelIds = state.subscribedChannelIds.filter(
-          (id) => id !== channelId,
-        );
-      }
-    });
+    } else {
+        state.subscribedChannelIds =
+            state.subscribedChannelIds.filter(
+                (id) => id !== channelId
+            );
+    }
+})
 
     b.addCase(toggleSubscription.rejected, (state, action) => {
       state.status = "idle";

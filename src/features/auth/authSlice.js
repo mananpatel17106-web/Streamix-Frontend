@@ -1,5 +1,6 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { api, apiErr } from "../../services/api";
+import { toggleSubscription } from "../subscription/subscriptionSlice";
 
 export const registerUser = createAsyncThunk(
   "auth/register",
@@ -199,6 +200,15 @@ const authSlice = createSlice({
       s.history = a.payload || [];
     });
     b.addCase(addToHistory.fulfilled, () => {});
+    b.addCase(toggleSubscription.fulfilled, (state, action) => {
+    if (!state.channel) return;
+
+    if (state.channel._id !== action.meta.arg) return;
+
+    state.channel.isSubscribed = action.payload.subscribed;
+    state.channel.subscribersCount =
+        action.payload.subscribersCount;
+})
   },
 });
 

@@ -43,7 +43,6 @@ export default function Watch() {
 
   const [commentCount, setCommentCount] = useState(0);
 
-
   const [showFullDescription, setShowFullDescription] = useState(false);
 
   const [playlistOpen, setPlaylistOpen] = useState(false);
@@ -55,11 +54,7 @@ export default function Watch() {
   );
 
   const subscribed =
-    current?.owner?.isSubscribed ??
-    (current?.owner?._id
-      ? subscribedChannelIds.includes(current.owner._id)
-      : false);
-
+    current?.owner?._id && subscribedChannelIds.includes(current.owner._id);
 
   const isOwnChannel = user?._id === current?.owner?._id;
 
@@ -79,8 +74,6 @@ export default function Watch() {
 
     dispatch(addToHistory(current._id));
   }, [dispatch, user, current?._id]);
-
-  
 
   useEffect(() => {
     if (current?.owner?.subscribersCount !== undefined) {
@@ -115,19 +108,23 @@ export default function Watch() {
   };
 
   const sub = async () => {
-  if (!user) {
-    toast.error("Sign in first");
-    return;
-  }
+    if (!user) {
+      toast.error("Sign in first");
+      return;
+    }
 
-  if (!current?.owner?._id) return;
+    if (!current?.owner?._id) return;
 
-  const res = await dispatch(toggleSubscription(current.owner._id));
+    const res = await dispatch(toggleSubscription(current.owner._id));
 
-  if (res.meta.requestStatus !== "fulfilled") {
-    toast.error("Unable to subscribe");
-  }
-};
+    if (res.meta.requestStatus === "fulfilled") {
+      dispatch(fetchSubscribedChannels(user._id));
+    }
+
+    if (res.meta.requestStatus !== "fulfilled") {
+      toast.error("Unable to subscribe");
+    }
+  };
 
   const submitComment = async (e) => {
     e.preventDefault();

@@ -24,6 +24,12 @@ export default function Channel() {
 
   const user = useSelector((state) => state.auth.user);
 
+  const subscribedChannelIds = useSelector(
+    (state) => state.subscriptions.subscribedChannelIds,
+  );
+  const isSubscribed =
+    subscribedChannelIds.includes(channel._id) || channel.isSubscribed;
+
   useEffect(() => {
     const loadChannel = async () => {
       const res = await dispatch(fetchChannelProfile(username));
@@ -55,12 +61,10 @@ export default function Channel() {
 
     if (res.meta.requestStatus === "fulfilled") {
       toast.success(
-        channel.isSubscribed
+        isSubscribed
           ? "Unsubscribed successfully"
           : "Subscribed successfully",
       );
-
-      dispatch(fetchChannelProfile(username));
 
       if (user?._id) {
         dispatch(fetchSubscribedChannels(user._id));
@@ -126,13 +130,13 @@ export default function Channel() {
         <button
           onClick={handleSubscribe}
           className={`flex items-center gap-2 rounded-full px-6 py-3 font-medium transition ${
-            channel.isSubscribed
+            isSubscribed
               ? "bg-neutral-700 hover:bg-neutral-600 text-white"
               : "bg-red-600 hover:bg-red-700 text-white"
           }`}>
           <Bell size={18} />
 
-          {channel.isSubscribed ? "Subscribed" : "Subscribe"}
+          {isSubscribed ? "Subscribed" : "Subscribe"}
         </button>
       </div>
 
