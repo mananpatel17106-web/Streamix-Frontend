@@ -43,7 +43,6 @@ export default function Watch() {
 
   const [commentCount, setCommentCount] = useState(0);
 
-  // const [subbed, setSubbed] = useState(false);
 
   const [showFullDescription, setShowFullDescription] = useState(false);
 
@@ -81,11 +80,7 @@ export default function Watch() {
     dispatch(addToHistory(current._id));
   }, [dispatch, user, current?._id]);
 
-  // useEffect(() => {
-  //   if (!current?.owner) return;
-
-  //   setSubbed(current.owner.isSubscribed || current.owner.subscribed || false);
-  // }, [current]);
+  
 
   useEffect(() => {
     if (current?.owner?.subscribersCount !== undefined) {
@@ -196,10 +191,6 @@ export default function Watch() {
           thumbnail={current.thumbnail}
           title={current.title}
         />
-
-        <h1 className="mt-4 text-xl font-bold leading-snug text-white sm:text-2xl">
-          {current.title}
-        </h1>
 
         <VideoInfo
           current={current}
