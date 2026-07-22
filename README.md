@@ -26,6 +26,9 @@ Backend API: Coming Soon
 ### Upload
 ![Upload](screenshots/Upload.png)
 
+### Profile
+![Profile](screenshots/Profile.png)
+
 ---
 
 # ✨ Features
