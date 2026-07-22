@@ -29,6 +29,9 @@ Backend API: Coming Soon
 ### Profile
 ![Profile](screenshots/Profile.png)
 
+### Setting
+![Setting](screenshots/Setting.png)
+
 ---
 
 # ✨ Features
