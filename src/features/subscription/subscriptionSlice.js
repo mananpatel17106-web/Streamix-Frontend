@@ -55,7 +55,7 @@ const slice = createSlice({
     b.addCase(fetchSubscribedChannels.fulfilled, (state, action) => {
       state.status = "idle";
 
-      const channels = action.payload?.data || [];
+      const channels = Array.isArray(action.payload) ? action.payload : [];
 
       state.channels = channels;
 
@@ -75,9 +75,7 @@ const slice = createSlice({
       .addCase(fetchChannelSubscribers.fulfilled, (state, action) => {
         state.status = "idle";
 
-        state.subscribers = Array.isArray(action.payload)
-          ? action.payload
-          : action.payload?.docs || [];
+        state.subscribers = action.payload || [];
       });
 
     b.addCase(fetchChannelSubscribers.rejected, (state, action) => {

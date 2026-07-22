@@ -8,6 +8,7 @@ import { fetchChannelProfile } from "../features/auth/authSlice";
 
 import { toggleSubscription } from "../features/subscription/subscriptionSlice";
 import { fetchVideos } from "../features/video/videoSlice";
+import { fetchSubscribedChannels } from "../features/subscription/subscriptionSlice";
 
 import VideoCard from "../components/VideoCard";
 
@@ -20,6 +21,8 @@ export default function Channel() {
   const channel = useSelector((state) => state.auth.channel);
 
   const { list: videos, status } = useSelector((state) => state.videos);
+
+  const user = useSelector((state) => state.auth.user);
 
   useEffect(() => {
     const loadChannel = async () => {
@@ -41,6 +44,12 @@ export default function Channel() {
     loadChannel();
   }, [dispatch, username]);
 
+  useEffect(() => {
+    if (user?._id) {
+      dispatch(fetchSubscribedChannels(user._id));
+    }
+  }, [dispatch, user]);
+
   const handleSubscribe = async () => {
     const res = await dispatch(toggleSubscription(channel._id));
 
@@ -52,6 +61,10 @@ export default function Channel() {
       );
 
       dispatch(fetchChannelProfile(username));
+
+      if (user?._id) {
+        dispatch(fetchSubscribedChannels(user._id));
+      }
     } else {
       toast.error(res.payload || "Something went wrong");
     }

@@ -61,12 +61,6 @@ export default function Watch() {
       ? subscribedChannelIds.includes(current.owner._id)
       : false);
 
-  console.log({
-    isSubscribed: current?.owner?.isSubscribed,
-    subscribedIds: subscribedChannelIds,
-    ownerId: current?.owner?._id,
-    finalSubscribed: subscribed,
-  });
 
   const isOwnChannel = user?._id === current?.owner?._id;
 

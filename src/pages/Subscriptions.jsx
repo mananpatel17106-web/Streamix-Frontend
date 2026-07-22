@@ -39,8 +39,12 @@ export default function Subscriptions() {
     });
   }, [channels, search]);
 
-  const handleUnsubscribe = (channelId) => {
-    dispatch(toggleSubscription(channelId));
+  const handleUnsubscribe = async (channelId) => {
+    const res = await dispatch(toggleSubscription(channelId));
+
+    if (res.meta.requestStatus === "fulfilled") {
+      dispatch(fetchSubscribedChannels(user._id));
+    }
   };
 
   return (

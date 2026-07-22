@@ -217,8 +217,8 @@ export default function Register() {
                     setServerError("");
                   }}
                 />
-                {eamilError && (
-                  <p className="mt-1 text-sm text-red-500">{eamilError}</p>
+                {emailError && (
+                  <p className="mt-1 text-sm text-red-500">{emailError}</p>
                 )}
               </label>
 
