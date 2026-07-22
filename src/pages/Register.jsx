@@ -249,16 +249,17 @@ export default function Register() {
                             : "bg-zinc-700"
                         }`}
                       />
+
                       <div
                         className={`h-1 flex-1 rounded ${
-                          form.password.length >= 10
+                          /[A-Z]/.test(form.password)
                             ? "bg-green-500"
                             : "bg-zinc-700"
                         }`}
                       />
+
                       <div
                         className={`h-1 flex-1 rounded ${
-                          /[A-Z]/.test(form.password) &&
                           /[0-9]/.test(form.password)
                             ? "bg-green-500"
                             : "bg-zinc-700"

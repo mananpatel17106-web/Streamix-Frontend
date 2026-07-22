@@ -34,7 +34,7 @@ export default function Home() {
     dispatch(
       fetchVideos({
         query,
-        category: filter || undefined,
+        category: filter && filter !== "trending" ? filter : undefined,
         sortBy: filter === "trending" ? "views" : "createdAt",
         sortType: "desc",
       }),
@@ -161,8 +161,7 @@ export default function Home() {
                 )
               }
               className={`flex-none rounded-full px-5 py-2.5 text-sm font-medium transition-all duration-200 ${
-                (category === "All" && !filter) ||
-                filter === category
+                (category === "All" && !filter) || filter === category
                   ? "bg-white text-black shadow-lg"
                   : "bg-neutral-900 text-neutral-300 hover:bg-neutral-800 hover:text-white"
               }`}>
