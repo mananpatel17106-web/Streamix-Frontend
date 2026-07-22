@@ -15,10 +15,10 @@ import VideoCard from "../components/VideoCard";
 import { formatViews } from "../utils/format";
 
 export default function Channel() {
+  
   const { username } = useParams();
-  const dispatch = useDispatch();
 
-  const channel = useSelector((state) => state.auth.channel);
+  const dispatch = useDispatch();
 
   const { list: videos, status } = useSelector((state) => state.videos);
 
@@ -27,52 +27,8 @@ export default function Channel() {
   const subscribedChannelIds = useSelector(
     (state) => state.subscriptions.subscribedChannelIds,
   );
-  const isSubscribed =
-    subscribedChannelIds.includes(channel._id) || channel.isSubscribed;
 
-  useEffect(() => {
-    const loadChannel = async () => {
-      const res = await dispatch(fetchChannelProfile(username));
-
-      if (res.meta.requestStatus === "fulfilled") {
-        const data = res.payload;
-
-        dispatch(
-          fetchVideos({
-            userId: data._id,
-            page: 1,
-            limit: 24,
-          }),
-        );
-      }
-    };
-
-    loadChannel();
-  }, [dispatch, username]);
-
-  useEffect(() => {
-    if (user?._id) {
-      dispatch(fetchSubscribedChannels(user._id));
-    }
-  }, [dispatch, user]);
-
-  const handleSubscribe = async () => {
-    const res = await dispatch(toggleSubscription(channel._id));
-
-    if (res.meta.requestStatus === "fulfilled") {
-      toast.success(
-        isSubscribed
-          ? "Unsubscribed successfully"
-          : "Subscribed successfully",
-      );
-
-      if (user?._id) {
-        dispatch(fetchSubscribedChannels(user._id));
-      }
-    } else {
-      toast.error(res.payload || "Something went wrong");
-    }
-  };
+  const channel = useSelector((state) => state.auth.channel);
 
   if (!channel) {
     return (
@@ -81,6 +37,46 @@ export default function Channel() {
       </div>
     );
   }
+
+  const isSubscribed = subscribedChannelIds.includes(channel._id);
+
+  useEffect(() => {
+  alert("Channel useEffect");
+
+  const loadChannel = async () => {
+    alert("Before Dispatch");
+
+    const res = await dispatch(fetchChannelProfile(username));
+
+    alert(res.meta.requestStatus);
+  };
+
+  loadChannel();
+}, [dispatch, username]);
+
+  useEffect(() => {
+    if (user?._id) {
+      dispatch(fetchSubscribedChannels(user._id));
+    }
+  }, [dispatch, user]);
+
+  const handleSubscribe = async () => {
+  const res = await dispatch(toggleSubscription(channel._id));
+
+  if (toggleSubscription.fulfilled.match(res)) {
+    if (user?._id) {
+      dispatch(fetchSubscribedChannels(user._id));
+    }
+
+    toast.success(
+      isSubscribed
+        ? "Unsubscribed successfully"
+        : "Subscribed successfully"
+    );
+  } else {
+    toast.error(res.payload || "Something went wrong");
+  }
+};
 
   return (
     <div className="mx-auto w-full max-w-7xl px-4 py-6">
