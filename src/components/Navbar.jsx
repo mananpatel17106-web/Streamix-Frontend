@@ -295,7 +295,22 @@ export default function Navbar({ onMenu }) {
                   </button>
 
                   {showNotifications && (
-                    <div className="absolute right-0 mt-3 w-96 overflow-hidden rounded-2xl border border-neutral-800 bg-neutral-950 shadow-2xl">
+                    <div
+                      className="
+fixed
+top-16
+right-3
+z-[9999]
+w-[calc(100vw-24px)]
+max-w-[380px]
+rounded-2xl
+border
+border-neutral-800
+bg-neutral-950
+shadow-2xl
+overflow-hidden
+sm:right-4
+">
                       <div className="flex items-center justify-between border-b border-neutral-800 p-4">
                         <h3 className="font-semibold">Notifications</h3>
 
@@ -307,9 +322,9 @@ export default function Navbar({ onMenu }) {
                         </button>
                       </div>
 
-                      <div className="max-h-96 overflow-y-auto">
+                      <div className="max-h-[60vh] overflow-y-auto sm:max-h-96">
                         {!loading && notifications.length === 0 && (
-                          <div className="py-10 text-center text-neutral-500">
+                          <div className="flex h-44 items-center justify-center text-sm text-neutral-500">
                             No notifications yet.
                           </div>
                         )}
@@ -353,7 +368,19 @@ export default function Navbar({ onMenu }) {
                         ))}
                       </div>
 
-                      <button className="w-full border-t border-neutral-800 py-3 text-sm font-medium hover:bg-neutral-900">
+                      <button
+                        className="
+    sticky
+    bottom-0
+    w-full
+    border-t
+    border-neutral-800
+    bg-neutral-950
+    py-3
+    text-sm
+    font-medium
+    hover:bg-neutral-900
+  ">
                         View all notifications
                       </button>
                     </div>
