@@ -15,7 +15,6 @@ import VideoCard from "../components/VideoCard";
 import { formatViews } from "../utils/format";
 
 export default function Channel() {
-  
   const { username } = useParams();
 
   const dispatch = useDispatch();
@@ -30,6 +29,30 @@ export default function Channel() {
 
   const channel = useSelector((state) => state.auth.channel);
 
+  useEffect(() => {
+    const loadChannel = async () => {
+      const res = await dispatch(fetchChannelProfile(username));
+
+      console.log("RES:", res);
+      console.log("PAYLOAD:", res.payload);
+      console.log("STATUS:", res.meta.requestStatus);
+    };
+
+    loadChannel();
+  }, [dispatch, username]);
+
+  useEffect(() => {
+    if (channel?._id) {
+      dispatch(fetchVideos({ userId: channel._id }));
+    }
+  }, [dispatch, channel?._id]);
+
+  useEffect(() => {
+    if (user?._id) {
+      dispatch(fetchSubscribedChannels(user._id));
+    }
+  }, [dispatch, user]);
+
   if (!channel) {
     return (
       <div className="flex justify-center py-20">
@@ -38,45 +61,23 @@ export default function Channel() {
     );
   }
 
-  const isSubscribed = subscribedChannelIds.includes(channel._id);
-
-  useEffect(() => {
-  alert("Channel useEffect");
-
-  const loadChannel = async () => {
-    alert("Before Dispatch");
-
-    const res = await dispatch(fetchChannelProfile(username));
-
-    alert(res.meta.requestStatus);
-  };
-
-  loadChannel();
-}, [dispatch, username]);
-
-  useEffect(() => {
-    if (user?._id) {
-      dispatch(fetchSubscribedChannels(user._id));
-    }
-  }, [dispatch, user]);
+  const isSubscribed = channel && subscribedChannelIds.includes(channel._id);
 
   const handleSubscribe = async () => {
-  const res = await dispatch(toggleSubscription(channel._id));
+    const res = await dispatch(toggleSubscription(channel._id));
 
-  if (toggleSubscription.fulfilled.match(res)) {
-    if (user?._id) {
-      dispatch(fetchSubscribedChannels(user._id));
+    if (toggleSubscription.fulfilled.match(res)) {
+      if (user?._id) {
+        dispatch(fetchSubscribedChannels(user._id));
+      }
+
+      toast.success(
+        isSubscribed ? "Unsubscribed successfully" : "Subscribed successfully",
+      );
+    } else {
+      toast.error(res.payload || "Something went wrong");
     }
-
-    toast.success(
-      isSubscribed
-        ? "Unsubscribed successfully"
-        : "Subscribed successfully"
-    );
-  } else {
-    toast.error(res.payload || "Something went wrong");
-  }
-};
+  };
 
   return (
     <div className="mx-auto w-full max-w-7xl px-4 py-6">

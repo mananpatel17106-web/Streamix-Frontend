@@ -133,7 +133,7 @@ Streamix/
 ## Clone Repository
 
 ```bash
-git clone https://github.com/mananpatel17106-web/Streamix-Frontend
+git clone https://github.com/mananpatel17106-web/Streamix-Frontend.git
 ```
 
 ---
