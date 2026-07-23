@@ -1,14 +1,26 @@
 # 🎬 Streamix
 
+![React](https://img.shields.io/badge/React-19-blue?logo=react)
+
+![Vite](https://img.shields.io/badge/Vite-7-purple?logo=vite)
+
+![Node](https://img.shields.io/badge/Node.js-22-green?logo=node.js)
+
+![MongoDB](https://img.shields.io/badge/MongoDB-Database-green?logo=mongodb)
+
+![License](https://img.shields.io/badge/License-MIT-blue)
+
+![PRs](https://img.shields.io/badge/PRs-Welcome-brightgreen)
+
 A Full Stack MERN Video Streaming Platform inspired by YouTube with secure authentication, video uploads, subscriptions, playlists, comments, likes, search, trending videos, watch history, and creator dashboard.
 
 ---
 
 ## 🚀 Live Demo
 
-Frontend: Coming Soon
+Frontend: https://streamix-frontend-beta.vercel.app
 
-Backend API: Coming Soon
+Backend API: https://streamix-backend-y8ib.onrender.com
 
 ---
 
@@ -148,36 +160,12 @@ npm run dev
 
 ---
 
-## Backend
-
-```bash
-cd Streamix-Backend
-npm install
-npm run dev
-```
-
----
-
 # 🔐 Environment Variables
 
 Create `.env`
 
 ```env
-PORT=
-
-MONGODB_URI=
-
-ACCESS_TOKEN_SECRET=
-ACCESS_TOKEN_EXPIRY=
-
-REFRESH_TOKEN_SECRET=
-REFRESH_TOKEN_EXPIRY=
-
-CLOUDINARY_CLOUD_NAME=
-CLOUDINARY_API_KEY=
-CLOUDINARY_API_SECRET=
-
-CORS_ORIGIN=
+VITE_API_BASE_URL=
 ```
 
 ---
@@ -243,6 +231,8 @@ npm start
 **Manan Patel**
 
 Computer Science & Engineering Student
+
+GitHub: https://github.com/mananpatel17106-web
 
 ---
 
